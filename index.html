@@ -1,0 +1,1015 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:#f0efeb;color:var(--color-text-primary)}
+.layout{display:flex;min-height:600px}
+.sidebar{width:188px;flex-shrink:0;background:#fff;border-right:0.5px solid #e5e2db;display:flex;flex-direction:column}
+.sb-brand{padding:14px 14px 12px;border-bottom:1px solid #f0efeb;display:flex;align-items:center;gap:10px}
+.sb-logo{width:32px;height:32px;background:#c0392b;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo svg{width:15px;height:15px}
+.sb-n{font-size:13px;font-weight:500;color:#1a1a1a;line-height:1.2}
+.sb-s{font-size:10px;color:#aaa}
+.sb-grp{padding:12px 12px 4px;font-size:10px;font-weight:500;color:#bbb;text-transform:uppercase;letter-spacing:.07em}
+.sbi{display:flex;align-items:center;gap:8px;padding:7px 14px;margin:1px 6px;border-radius:6px;cursor:pointer;font-size:12px;color:#666;transition:all .12s}
+.sbi svg{width:13px;height:13px;flex-shrink:0;opacity:.55}
+.sbi:hover{background:#f7f5f2;color:#1a1a1a}
+.sbi.on{background:#fdf0ed;color:#c0392b;font-weight:500}
+.sbi.on svg{opacity:1}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.topbar{background:#fff;border-bottom:1px solid #e8e5de;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0}
+.pg-title{font-size:17px;font-weight:500;color:#1a1a1a}
+.pg-sub{font-size:11px;color:#aaa;margin-top:1px}
+.tba{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.btn-o{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:0.5px solid #ccc;background:#fff;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font-sans);color:#444;transition:all .12s}
+.btn-o:hover{background:#f7f5f2;border-color:#aaa}
+.btn-p{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border:none;background:#c0392b;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font-sans);color:#fff;font-weight:500;transition:background .12s}
+.btn-p:hover{background:#a93226}
+.btn-o svg,.btn-p svg{width:12px;height:12px}
+.content{padding:16px 18px;overflow:auto}
+.panel{display:none}.panel.active{display:block}
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid #e8e5de;border-radius:8px;padding:13px 14px;border-top:3px solid #ddd}
+.kpi.bl{border-top-color:#2980b9}.kpi.gr{border-top-color:#27ae60}.kpi.or{border-top-color:#e67e22}.kpi.re{border-top-color:#c0392b}.kpi.pu{border-top-color:#8e44ad}
+.kpi-lbl{font-size:10px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.kpi-val{font-size:22px;font-weight:500;color:#1a1a1a;line-height:1}
+.kpi-sub{font-size:10px;color:#bbb;margin-top:3px}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:14px}
+.cc{background:#fff;border:1px solid #e8e5de;border-radius:8px;padding:14px}
+.cc-title{font-size:12px;font-weight:500;color:#1a1a1a;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.cc-sub{font-size:11px;color:#bbb}
+.cht{height:150px;position:relative}
+.tc{background:#fff;border:1px solid #e8e5de;border-radius:8px;padding:13px;margin-bottom:10px}
+.tc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:7px}
+.tc-title{font-size:12px;font-weight:500;color:#1a1a1a}
+.srch{padding:6px 10px;border:0.5px solid #ddd;border-radius:6px;font-size:12px;font-family:var(--font-sans);background:#fafafa;width:190px}
+.srch:focus{outline:none;border-color:#c0392b;background:#fff}
+table.dt{width:100%;border-collapse:collapse;font-size:12px}
+.dt th{background:#f8f6f2;padding:7px 9px;text-align:left;font-size:10px;font-weight:500;color:#999;border-bottom:1px solid #eee;white-space:nowrap}
+.dt td{padding:7px 9px;border-bottom:0.5px solid #f2f0ec}
+.dt tbody tr:hover{background:#fdf9f8}
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:500}
+.bd{background:#e8f4fd;color:#1a6396}.bn{background:#f0eeff;color:#4a3796}
+
+/* Entry */
+.shift-row{display:flex;gap:8px;margin-bottom:14px}
+.sh-opt{flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;cursor:pointer;text-align:center;font-size:12px;transition:all .15s;background:#fff}
+.sh-opt.day.sel{background:#fff8e6;border-color:#e67e22;color:#c0392b;font-weight:500}
+.sh-opt.night.sel{background:#f0eeff;border-color:#8e44ad;color:#4a3796;font-weight:500}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:10px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.fi{padding:7px 9px;border:1px solid #ddd;border-radius:6px;font-size:12px;font-family:var(--font-sans);background:#fff;width:100%}
+.fi:focus{outline:none;border-color:#c0392b;box-shadow:0 0 0 2px #c0392b15}
+.etbl-wrap{overflow-x:auto;border:1px solid #e5e2db;border-radius:8px}
+.etbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.etbl thead tr{background:#2c3e50}
+.etbl th{padding:8px 7px;text-align:left;font-size:10px;font-weight:500;color:#b8c5d3;white-space:nowrap}
+.etbl tbody tr:nth-child(even){background:#fafaf8}
+.etbl tbody tr:hover{background:#fdf0ed}
+.etbl td{padding:2px 2px;border-bottom:0.5px solid #f0efeb}
+.etbl input,.etbl select{border:0.5px solid transparent;border-radius:5px;padding:5px 6px;background:transparent;font-size:11.5px;font-family:var(--font-sans);width:100%;transition:all .1s}
+.etbl input:hover,.etbl select:hover{border-color:#ddd;background:#fff}
+.etbl input:focus,.etbl select:focus{outline:none;border-color:#c0392b;background:#fff;box-shadow:0 0 0 2px #c0392b12}
+.rn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#fdf0ed;color:#c0392b;font-size:10px;font-weight:500}
+.bx{background:transparent;border:none;cursor:pointer;padding:3px 5px;border-radius:4px;color:#bbb;font-size:13px;line-height:1}
+.bx:hover{background:#fdf0ed;color:#c0392b}
+.ac-wrap{position:relative}
+.ac-drop{position:absolute;top:calc(100% + 2px);left:0;min-width:270px;max-width:400px;background:#fff;border:1px solid #ddd;border-radius:7px;z-index:9999;max-height:185px;overflow-y:auto;display:none;box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.ac-it{padding:7px 11px;cursor:pointer;font-size:11.5px;color:#333;border-bottom:0.5px solid #f5f4f0}
+.ac-it:last-of-type{border-bottom:none}
+.ac-it:hover,.ac-it.hi{background:#fdf0ed;color:#c0392b}
+.ac-it mark{background:transparent;font-weight:500;color:#c0392b}
+.ac-ft{font-size:10px;color:#aaa;padding:4px 11px;background:#f8f6f2;border-top:0.5px solid #eee}
+.si-item{background:#fff;border:1px solid #e8e5de;border-radius:7px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:7px;transition:border-color .12s}
+.si-item:hover{border-color:#c0392b22}
+.pb{background:#f0eeea;border-radius:20px;height:4px;overflow:hidden;margin-top:4px;width:150px}
+.pf{height:100%;border-radius:20px}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
+.empty-st{text-align:center;padding:2.5rem;color:#aaa;font-size:12px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+@media print{.no-print{display:none!important}}
+</style>
+
+<div class="layout">
+<div class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo"><svg fill="none" stroke="#fff" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+    <div><div class="sb-n">ProdMIS</div><div class="sb-s">Production System</div></div>
+  </div>
+  <div class="sb-grp">Main</div>
+  <div class="sbi on" onclick="nav('dashboard',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+  <div class="sbi" onclick="nav('entry',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Daily Entry</div>
+  <div class="sbi" onclick="nav('records',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>All Records</div>
+  <div class="sb-grp">Analysis</div>
+  <div class="sbi" onclick="nav('analytics',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics</div>
+  <div class="sbi" onclick="nav('machinewise',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M21 12h-2M5 12H3M12 21v-2M12 5V3"/></svg>Machine Wise</div>
+  <div class="sbi" onclick="nav('partwise',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>Part Wise</div>
+  <div class="sb-grp">Reports</div>
+  <div class="sbi" onclick="nav('print',this)">
+  <div class="sbi" onclick="nav('settings',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print / Export</div>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="pg-dashboard" class="panel active">
+  <div class="topbar">
+    <div><div class="pg-title">Dashboard</div><div class="pg-sub" id="dash-sub">AKME Technologies, Bangalore</div></div>
+    <div class="tba">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#888;padding:6px 11px;border:0.5px solid #ddd;border-radius:6px;background:#fff"><span class="dot" style="background:#27ae60"></span>Live</div>
+      <button class="btn-o" onclick="buildDash()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Sync</button>
+      <button class="btn-p" onclick="gotoEntry()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Entry</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="kpi-row">
+      <div class="kpi bl"><div class="kpi-lbl">Total Revenue</div><div class="kpi-val" id="kv-rev">—</div><div class="kpi-sub" id="ks-rev">—</div></div>
+      <div class="kpi gr"><div class="kpi-lbl">Total Produced</div><div class="kpi-val" id="kv-prod">—</div><div class="kpi-sub" id="ks-prod">—</div></div>
+      <div class="kpi or"><div class="kpi-lbl">Avg Efficiency</div><div class="kpi-val" id="kv-eff">—</div><div class="kpi-sub">Planned vs Actual</div></div>
+      <div class="kpi re"><div class="kpi-lbl">Total Rejected</div><div class="kpi-val" id="kv-rej">—</div><div class="kpi-sub" id="ks-rej">—</div></div>
+      <div class="kpi pu"><div class="kpi-lbl">Total Entries</div><div class="kpi-val" id="kv-ent">—</div><div class="kpi-sub" id="ks-ent">—</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="cc"><div class="cc-title">Daily Production Trend <span class="cc-sub" id="trend-rng"></span></div><div class="cht"><canvas id="ch-trend"></canvas></div></div>
+      <div class="cc"><div class="cc-title">Shift Split (Revenue)</div><div class="cht"><canvas id="ch-shift"></canvas></div></div>
+    </div>
+    <div class="tc"><div class="tc-hd"><div class="tc-title">Recent Entries</div></div>
+      <table class="dt"><thead><tr><th>Date</th><th>Shift</th><th>Part Name</th><th>Operation</th><th>M/C</th><th>Planned</th><th>Produced</th><th>Eff%</th></tr></thead>
+      <tbody id="recent-tbody"><tr><td colspan="9" class="empty-st">No data yet — save a daily plan to see it here.</td></tr></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- DAILY ENTRY -->
+<div id="pg-entry" class="panel">
+  <div class="topbar">
+    <div><div class="pg-title">Daily Entry</div><div class="pg-sub">Enter shiftwise production plan</div></div>
+    <div class="tba">
+      <input type="date" id="entry-date" class="fi" style="width:150px">
+      <button class="btn-o" onclick="clearForm()">Clear</button>
+      <button class="btn-p" onclick="savePlan()"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save & Print</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="tc">
+      <div class="tc-hd"><div class="tc-title">Shift</div></div>
+      <div class="shift-row">
+        <div class="sh-opt day sel" id="sh-day" onclick="setShift('DAY')"><div style="font-size:15px;margin-bottom:2px">☀</div><div>Day Shift</div></div>
+        <div class="sh-opt night" id="sh-night" onclick="setShift('NIGHT')"><div style="font-size:15px;margin-bottom:2px">☽</div><div>Night Shift</div></div>
+      </div>
+      <div class="form-grid">
+
+        <div class="fg"><label class="fl">Shift Remarks</label><input type="text" id="g-remarks" class="fi" placeholder="Any notes for this shift"></div>
+      </div>
+    </div>
+    <div class="tc">
+      <div class="tc-hd">
+        <div class="tc-title">Production rows <span style="font-size:10px;color:#aaa;font-weight:400" id="row-count"></span></div>
+        <div style="display:flex;gap:6px"><button class="btn-o" onclick="addRow()">+ Add row</button><button class="btn-o" onclick="addRows5()">+ 5 rows</button></div>
+      </div>
+      <div class="etbl-wrap">
+      <table class="etbl">
+        <thead><tr>
+          <th style="width:32px">#</th>
+          <th style="width:185px">Part name</th>
+          <th style="width:75px">Part code</th>
+          <th style="width:155px">Operation</th>
+          <th style="width:80px">M/C no.</th>
+          <th style="width:68px">Planned</th>
+          <th style="width:68px">Produced</th>
+          <th style="width:60px">Rejected</th>
+          <th style="width:100px">Remarks</th>
+          <th class="no-print" style="width:72px;background:#1a3a5c;color:#7ec8e3">Pcs/Hr</th>
+          <th class="no-print" style="width:72px;background:#1a3a5c;color:#7ec8e3">Hrs Req</th>
+          <th style="width:26px"></th>
+        </tr></thead>
+        <tbody id="entry-body"></tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALL RECORDS -->
+<div id="pg-records" class="panel">
+  <div class="topbar"><div><div class="pg-title">All Records</div><div class="pg-sub" id="rec-sub">—</div></div>
+    <div class="tba"><input type="text" class="srch" placeholder="Search by date, part, machine…" oninput="filterRecs(this.value)"><button class="btn-o" onclick="exportExcel()" style="white-space:nowrap"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Excel</button></div>
+  </div>
+  <div class="content" id="recs-content"></div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="pg-analytics" class="panel">
+  <div class="topbar"><div><div class="pg-title">Analytics</div><div class="pg-sub">Production performance overview</div></div></div>
+  <div class="content" id="ana-content"></div>
+</div>
+
+<!-- MACHINE WISE -->
+<div id="pg-machinewise" class="panel">
+  <div class="topbar"><div><div class="pg-title">Machine Wise</div><div class="pg-sub">Utilisation & output by machine</div></div></div>
+  <div class="content" id="mc-content"></div>
+</div>
+
+
+<!-- PART WISE -->
+<div id="pg-partwise" class="panel">
+  <div class="topbar"><div><div class="pg-title">Part Wise</div><div class="pg-sub">Production by part & operation</div></div></div>
+  <div class="content" id="part-content"></div>
+</div>
+
+<!-- PRINT -->
+<div id="pg-print" class="panel">
+  <div class="topbar"><div><div class="pg-title">Print / Export</div><div class="pg-sub">Select a saved plan to print</div></div></div>
+  <div class="content" id="print-content"></div>
+</div>
+
+
+<!-- SETTINGS -->
+<div id="pg-settings" class="panel">
+  <div class="topbar">
+    <div><div class="pg-title">Settings</div><div class="pg-sub"><span id="gs-badge" style="font-weight:500">&#x1F534; Not Connected</span></div></div>
+    <div class="tba"><button class="btn-p" onclick="saveSettings()">Save Settings</button></div>
+  </div>
+  <div class="content">
+    <div class="tc" style="margin-bottom:12px">
+      <div class="tc-hd"><div class="tc-title">Google Sheets &#8212; Permanent Storage</div></div>
+      <div style="font-size:12px;color:#555;line-height:1.8;background:#f0f9ff;padding:10px 12px;border-radius:6px;margin:8px 0;border-left:3px solid #2980b9">
+        Data lives in Google Sheets as the primary database. Every save/edit/delete writes directly to your sheet. On startup the app loads from Sheets.
+      </div>
+      <div class="form-grid" style="gap:10px">
+        <div class="fg" style="grid-column:1/-1"><label class="fl">Apps Script Web App URL</label>
+          <input type="url" id="gs-url" class="fi" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;font-family:monospace"></div>
+        <div class="fg"><label class="fl">Sheet Tab Name</label>
+          <input type="text" id="gs-sheet" class="fi" value="ProdMIS" placeholder="ProdMIS"></div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn-p" onclick="saveSettings()">Save Settings</button>
+        <button class="btn-o" onclick="testConnection()">Test Connection</button>
+        <button class="btn-o" style="color:#0f9d58;border-color:#0f9d58" onclick="pullFromSheets()">&#x2B07; Pull from Sheets</button>
+        <button class="btn-o" style="color:#e67e22;border-color:#e67e22" onclick="pushAllToSheets()">&#x2B06; Push All to Sheets</button>
+      </div>
+      <div id="gs-conn-status" style="margin-top:10px;font-size:11px;font-family:monospace;color:#888;min-height:18px;line-height:1.5"></div>
+      <div style="margin-top:10px;font-size:11px;color:#888;background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:8px 12px;line-height:1.8">
+        <b>&#9888; Common issues:</b><br>
+        &#8226; <b>Still shows "Not Connected"</b> — After authorising, you must <b>deploy a NEW VERSION</b> (Deploy &#8594; Manage deployments &#8594; Edit &#8594; Version: New version &#8594; Deploy)<br>
+        &#8226; <b>Timeout error</b> — Make sure "Who has access" is set to <b>Anyone</b> (not "Anyone with Google account")<br>
+        &#8226; <b>Wrong URL</b> — URL must end in <code>/exec</code>, not <code>/dev</code>
+      </div>
+    </div>
+    <div class="tc" style="margin-bottom:12px">
+      <div class="tc-hd"><div class="tc-title">Apps Script Code</div><button class="btn-o" onclick="copyAppsScript()">Copy Code</button></div>
+      <div style="font-size:11px;color:#555;background:#f8f6f2;padding:10px 12px;border-radius:6px;margin:8px 0;line-height:1.9">
+        <b>Setup (one time):</b><br>
+        1. Open Google Sheet &#8594; Extensions &#8594; Apps Script<br>
+        2. Delete existing code, paste the code below, Save (&#128190;)<br>
+        3. Deploy &#8594; New deployment &#8594; Web App &#8594; Execute as: <b>Me</b>, Access: <b>Anyone</b><br>
+        4. Copy the URL &#8594; paste above &#8594; Save Settings &#8594; Test Connection
+      </div>
+      <pre id="apps-script-code" style="background:#1e1e1e;color:#d4d4d4;padding:14px;border-radius:6px;font-size:9.5px;line-height:1.6;white-space:pre-wrap;max-height:280px;overflow-y:auto;margin:0"></pre>
+    </div>
+    <div class="tc">
+      <div class="tc-hd"><div class="tc-title">Export CSV</div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn-p" onclick="exportCSV('all')" style="background:#2980b9">Export All</button>
+        <button class="btn-o" onclick="exportCSV('month')">This Month</button>
+        <button class="btn-o" onclick="exportCSV('today')">Today</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /main -->
+</div><!-- /layout -->
+<div id="modal-root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const PARTS=[{"n":"6MM","c":"BLANKING","ops":["OUTSIDE"]},{"n":"A ENTRY SHELL","c":"50009780","ops":["1 & 2 CONE","1 & 2 WINDOW CUTTING","1st WINDOW CUTTING","2nd WINDOW CUTTING","3 & 4 WINDOW CUTTING","8 HOLE PIERCING","BLANKING","CENTER HOLE PIERCING","COOLING HOLE","EXTRA CONE","FIRST DRAW","ID DEBURRING","SECOND DRAW","SETTING","SIDE CLOSING","SLOT PIERCING","THIRD DRAW","THROUGHING","TRIMMING"]},{"n":"ACTUATOR MOUNTING PLATE RH","c":"30024967","ops":["BLANKING","FORMING","TRIMMING"]},{"n":"ALN BASE PLATE LH","c":"10000014","ops":["1 st DRAW","2 nd DRAW","2nd PUSHTHROUGH","3 rd  DRAW","4th DRAW","CENTRE PUSHTHROUGH","CHAMFIREING","CROPPING","DEBURRING","FIRST PIERCING","FORMING","PUSHTHROUGH","SECOND PIERCING","SETTING","TRIMMING"]},{"n":"ALN BASE PLATE LH","c":"10000015","ops":["BENDING"]},{"n":"ALN BASE PLATE LH/RH","c":"10000014","ops":["3 rd  DRAW"]},{"n":"ALN BASE PLATE RH","c":"10000015","ops":["1 st DRAW","2 nd DRAW","2nd PUSHTHROUGH","3 rd  DRAW","4th DRAW","BENDING","CENTER PUSHTHROUGH","CROPPING","FIRST PIERCING","FORMING","PUSHTHROUGH","SECOND PIERCING","SETTING","TRIMMING"]},{"n":"ALN BASE PLATE RH/LH","c":"10000015","ops":["2 nd DRAW","3 rd  DRAW","4th DRAW","BENDING","DEBURRING","PUSHTHROUGH","REWORK","TRIMMING"]},{"n":"ARM REAR DECK LIFT","c":"126-5578","ops":["BLANKING","PIERCING"]},{"n":"BASE PLATE RH/LH","c":"30016225","ops":["BLANKING","FORMING","PIERCING"]},{"n":"BBG24 - HOOD LATCH CATCH","c":"30034035","ops":["BENDING","BLANKING","PIERCING","SHAVING"]},{"n":"BBG24 - HOOD LATCH HOOK","c":"30033729","ops":["1st FORMING","2nd FORMING","BLANKING","FINAL FORMING","PIERCING"]},{"n":"BRACKET - FERROUS INBOARD LH, BEARING BUSHING UPPER","c":"L0642603","ops":["1st FORMING","BLANKING","PARTING","RESTRIKING","REWORK"]},{"n":"BRACKET - FERROUS OB LH, BEARING BUSHING UPPER","c":"L0642604","ops":["1st FORMING","BLANKING","RESTRIKING"]},{"n":"BRACKET RECLING CONTROL CABLE","c":"50017287/288","ops":["1st FORMING","2nd FORMING","BLANKING"]},{"n":"BRACKET RECLING CONTROL CABLE RH","c":"50017287/288","ops":["1st FORMING","2nd FORMING"]},{"n":"BRAKE ADJUSTER ASSEMBLY LH/RH","c":"G4110030","ops":["BENDING","BLANKING"]},{"n":"BRKT FLR MTG RR INR LH/RH","c":"30014641","ops":["BLANKING","FORMING","PIERCING","PUSH THROUGH"]},{"n":"BRKT RR NO 1 SEAT CUSHION FRAME RR","c":"5297031","ops":["PROGRESSIVE"]},{"n":"BRKT RR NO3 SEAT BACK RH INNER","c":"5296527","ops":["BLANKING","FORMING","PIERCING"]},{"n":"BRKT RR SEAT CUSHION SIDE RH","c":"5297030","ops":["BENDING","BLANKING"]},{"n":"BRKT RR SEAT RECLINING CONTROL LEVER","c":"5296978","ops":["BENDING","DEBURRING","PROGRESSIVE"]},{"n":"BRKT SPRING SUPPORT","c":"50017372","ops":["1st CURLING","2nd CURLING","BLANKING","DEBURRING","LANCING","REWORK"]},{"n":"BRKT SPRING SUPPORT","c":"50017373","ops":["1st CURLING","2nd CURLING","BLANKING","LANCING"]},{"n":"BRKT WIRING HARNESS CLAMP","c":"5317492","ops":["BENDING","BLANKING"]},{"n":"BRKT WIRING HARNESS CLAMP","c":"5318769","ops":["BENDING","BLANKING"]},{"n":"BRKT WIRING HARNESS CLAMP","c":"5318776","ops":["PROGRESSIVE"]},{"n":"BRKT WIRING HARNESS CLAMP","c":"5318777","ops":["PROGRESSIVE"]},{"n":"CAM BRKT","c":"50019791/90","ops":["1ST FORMING","BLANKING","PIEARCING","SECOND FORMING"]},{"n":"CLOCK SPRING SUPPORT BRACKET","c":"50017316","ops":["1st FORMING","2nd FORMING","BLANKING & PIRECING"]},{"n":"CONDENSER SHELL","c":"50009456","ops":["22 SETTING","CENTER PIERCING","CUT AND DRAW","FOURTH DRAW","LEG PIERCING","OUTER DRAW","OUTER SETTING","PUSHTHROUGH","SECOND DRAW","TAPING","THIRD DRAW","TRIMMING"]},{"n":"D6-BASE PLATE LH/RH","c":"30020660/662","ops":["BLANKING","FORMING","PIERCING"]},{"n":"DAIMLAR BASE PLATE LH","c":"30010782","ops":["2ND DRAW","FIRST DRAW","SETTING","THIRD DRAW"]},{"n":"DAIMLAR BASE PLATE RH","c":"30010782","ops":["2ND DRAW","BENDING","FIRST DRAW","SETTING","THIRD DRAW","TRIMMING","cropping"]},{"n":"END COVER 2 PIECE","c":"E4601600","ops":["BLANKING","BURR LABELLING","FIRST DRAW","FORMING","LANCING","LANCING CLOSING","REVERSE DRAW","SECOND DRAW","THIRD DRAW","TRIMMING"]},{"n":"END COVER CE 2020","c":"50009570","ops":["BLANKING","BURR LABELLING","CLOSING","FIRST DRAW","FORMING","LANCING","PIERCING","TRIMMING"]},{"n":"END COVER E010","c":"50009816","ops":["1 & 2 DRAW","2nd & 3rd REV DRAW","3rd DRAW & 1 REV DRAW","BLANKING","CLOSING","FORMING","LANCING","LEVELING","PIERCING"]},{"n":"FLR MTG BRKT RR OTR","c":"30014640","ops":["1ST PIERCING","2ND PIERCING","BENDING","BLANKING","FORMING","PUSH THROUGH","TRIMMING"]},{"n":"FRONT COVER MTG BRKT","c":"50020420/19","ops":["BLANKING","PIEARCING"]},{"n":"INSIDE LOCK LEVER LH/RH","c":"50019158/59","ops":["BLANKING","FORMING","PIERCING"]},{"n":"INSIDE RELEASE LEVER LH/RH","c":"50019160/50019161","ops":["1st FORMING","2nd FORMING","BLANKING","FORMING","PIERCING"]},{"n":"KEY LOCK LEVER LH/RH","c":"50019155/50019156","ops":["BLANKING","FORMING","PIERCING"]},{"n":"KY FRONT GUIDE RAIL LH","c":"50015677","ops":["1 st FORMING","CROPPING","DEBURRING","NOTCHING/2 nd FORMING","PIERCING","RESTRIKING","TRIMMING"]},{"n":"KY FRONT GUIDE RAIL RH","c":"50015678","ops":["1 st FORMING","CROPPING","DEBURRING","NOTCHING/2 nd FORMING","PIERCING","RESTRIKING","TRIMMING"]},{"n":"KY RR GUIDE RAIL LH","c":"50015694","ops":["1 st FORMING","CROPPING","DEBURRING","NOTCHING/2 nd FORMING","PIERCING","RESTRIKING","TRIMMING"]},{"n":"KY RR GUIDE RAIL RH","c":"50015695","ops":["1 st FORMING","CROPPING","DEBURRING","NOTCHING/2 nd FORMING","PIERCING","RESTRIKING","TRIMMING"]},{"n":"LATCH MTG BRKT OTB","c":"30022468","ops":["1ST PIERCING","1st FORMING","2ND PIERCING","2nd FORMING","BLANKING","Notching","RESTRIKING","REWORK"]},{"n":"LEG FRT INR LH","c":"RT64","ops":["1ST PIERCING","1st FORMING","2ND PIERCING","2nd FORMING","BLANKING","PRE PIERCING"]},{"n":"LEG FRT INR RH","c":"RT64","ops":["1ST PIERCING","1st FORMING","2ND PIERCING","2nd FORMING","BLANKING","PRE PIERCING"]},{"n":"LEG FRT OTR LH","c":"50016877","ops":["1ST BENDING","1ST PIERCING","2ED BENDING","2ED PIERCING","BLANKING","PRE-PIERCING"]},{"n":"LEG FRT OTR RH","c":"50016877","ops":["1ST BENDING","1ST PIERCING","2ED BENDING","2ED PIERCING","BLANKING","PRE-PIERCING"]},{"n":"LOCK ADAPTOR -OTR","c":"30002067","ops":["BLANKING","FIRST CURLING","LEG BENDING","PIERCING","SECOND CURLING"]},{"n":"LOCK ADAPTOR- INR","c":"30002066","ops":["BLANKING","FIRST CURLING","LEG BENDING","PIERCING","RIBBING","SECOND CURLING"]},{"n":"LOCK GUIDE","c":"30002806","ops":["1st CURLING","2nd CURLING","BLANKING"]},{"n":"LOWER RAIL","c":"300228334","ops":["1ST FORMING","CRIMPING","DEBURRING","PIERCING","RESTRIKE","REWORK","SECOND FORMING"]},{"n":"LOWER RAIL","c":"30022834","ops":["BLANKING","PRE-FORMING","PRE-PIERCING"]},{"n":"Lower Rail Rein BRKT INR","c":"30018963","ops":["BLANKING","FIRST BENDING","PIERCING","V BENDING"]},{"n":"MH HT 3 LEG","c":"30002928","ops":["1,2&3 CONE","1ST DRAW","2ED DRAW","3 RD DRAW","4 TH DRAW","BLANKING","PIERCING","RIBBING","TRIMMING"]},{"n":"MH HT 4 LEG","c":"30002928","ops":["1,2&3 CONE","1ST DRAW","2ED DRAW","3 RD DRAW","4 TH DRAW","BLANKING","PIERCING","RIBBING","TRIMMING"]},{"n":"MHLT 3 MTG","c":"W2100500","ops":["3 & 4DRAW","BLANKING","CONE1,2,3","FIRST DRAW","FOURT DRAW","PIERCING","RIBBING","SECOND DRAW","THIRD DRAW","TRIMMING"]},{"n":"OS CONNECTING LEVER","c":"50019157","ops":["COMPOUND TOOL","SHAVING TOOL"]},{"n":"OUTER COVER","c":"10000004","ops":["BLANKING","FIRST BENDING","SECOND BENDING"]},{"n":"OUTSIDE RELEASE LEVER LH/RH","c":"50019151/50019152","ops":["1st FORMING","2nd FORMING","BLANKING","PIERCING"]},{"n":"PATCH PLATE RH/LH","c":"30016226","ops":["BLANKING","FORMING","PIERCING"]},{"n":"PATCH RR SEAT LEG","c":"5297061","ops":["COINING","PROGRESSIVE"]},{"n":"PAWL BLOCKING LEVER","c":"50019154","ops":["COMPOUND TOOL"]},{"n":"PHOENIX DRUM COVER","c":"152632","ops":["BLANKING","FORMING","PARTING","PRE-PIERCING","PUSHTHROUGH","RIBBING","TRIMMING"]},{"n":"PLATE BASE LH","c":"SN630400/SN640400","ops":["BLANKING","FORMING","PIERCING"]},{"n":"PLATE BASE LH","c":"SN640400","ops":["DEBURRING","DIMPLING","FLATING","RESTRIKEING","REWORK"]},{"n":"PLATE BASE RH","c":"SN630400/SN640400","ops":["BLANKING","FORMING","PIERCING"]},{"n":"PLATE BASE RH","c":"SN640400","ops":["DIMPLING","FLATING","RESTRIKEING"]},{"n":"PLATE HOLDER LH","c":"SN630500/SN640500","ops":["AMBULANCE HOLE","FORMING","PIEARCING"]},{"n":"PLATE HOLDER LH/RH","c":"SN630500/SN640500","ops":["BLANKING","EMBOSING","PIEARCING","RESTRIKING"]},{"n":"PLATE HOLDER RH","c":"SN630500/SN640500","ops":["EMBOSING","PIEARCING"]},{"n":"PLATE RECLINING ADJUSTER","c":"5317792","ops":["PROGRESSIVE"]},{"n":"PLATE RR SEAT CUSH BRACKET","c":"50017293/294","ops":["1st FORMING","2nd FORMING","BLANKING","PIRECING"]},{"n":"PLATE RR SEAT CUSH BRACKET","c":"50017295/296","ops":["1st FORMING","2nd FORMING","BLANKING","PIRECING"]},{"n":"PROJECTION WASHER","c":"50019822","ops":["BLANKING","RESTRIKE"]},{"n":"PSA-LATAM-STRIKER BASE PLATE","c":"L4C00100","ops":["BLANKING","FORMING","PIERCING"]},{"n":"REAR COVER MTG BRKT","c":"50020422/21","ops":["BENDING","BLANKING","PIEARCING"]},{"n":"RECLINER ADAPTOR BRKT OB","c":"5317775/5317776","ops":["BLANKING","FORMING","PIERCING"]},{"n":"RECLINER BRACKET LOWER IB","c":"5296285/5297010","ops":["BLANKING","FORMING","PIERCING"]},{"n":"RECLINER BRACKET LOWER OB","c":"5296268/5297000","ops":["BLANKING","DEBURRING","DIMPLING","FORMING","PIERCING"]},{"n":"REINFORCEMENT PLATE","c":"30002329","ops":["BLANKING","FORMING"]},{"n":"REINFORCEMENT PLATE RBC S1U00100","c":"30002051","ops":["BLANKING","FORMING","PIERCING"]},{"n":"RETENTION PLATE LH","c":"SP02100132245-90","ops":["BLANKING","COINING","PIERCING","TRIMMING"]},{"n":"RETENTION PLATE RH","c":"SP02100132245-90","ops":["BLANKING","COINING","PIERCING","TRIMMING"]},{"n":"RIVET WASHER","c":"50020028","ops":["BLANKING"]},{"n":"RR SEAT CUSHION","c":"5297062","ops":["PROGRESSIVE","REWORK"]},{"n":"RR SEATCUSHION HINGE","c":"5297032","ops":["CENTER COINING","COINING","PROGRESSIVE","REWORK","SIDE COINING"]},{"n":"RT64 NEW","c":"30019423","ops":["BENDING","BLANKING","FIRST PIERCING","FORMING","SECOND PIERCING","SETTING"]},{"n":"RUBBER HOLDER LH/RH","c":"30000272","ops":["BLANKING","FORMING","PARTING","PIERCING","SETTING","TRIMMING"]},{"n":"RUBBER HOLDER RBC","c":"30000372","ops":["BLANKING","FORMING","FORMING & PIERCING","PIERCING"]},{"n":"S9J LOCK ADAPTOR","c":"30019177","ops":["BLANKING","FIRST CURLING","LEG BENDING","PIERCING","RIBBING","SECOND CURLING"]},{"n":"SCORPIO END COVER","c":"50010446","ops":["22 SETTING","CUT AND DRAW","FOURTH DRAW","LEG PIERCING","OD PIERCING","OUTER DRAW","OUTER SETTING","REWORK","SECOND DRAW","THIRD DRAW","TRIMMING"]},{"n":"SIDE MEMBER BRKT 3RD ROW","c":"5296245 / 5296260","ops":["1ST BENDING","2nd BENDING","BLANKING","DEBURRING","FORMING","PIERCING","REWORK"]},{"n":"SPACER BRKT","c":"50019795/94","ops":["BLANKING","FORMING","PARTING","PIEARCING"]},{"n":"SPRING HOLDER BRACKET OB","c":"5317778","ops":["BENDING","BLANKING","REWORK"]},{"n":"STOPPER BRKT","c":"5296980","ops":["BENDING","BLANKING","PIERCING"]},{"n":"SUPER ACE SHELL","c":"50009928","ops":["4 MM PIERCING","ASSEMBLY","DEBURRING","REWORK"]},{"n":"SUPPORT BRKT IB","c":"5296261/5296996","ops":["BLANKING","COINING","FORMING","PIERCING"]},{"n":"SUPPORT BRKT IB LH","c":"5296261/5296996","ops":["COINING","PIERCING"]},{"n":"SUPPORT BRKT IB RH","c":"5296261/5296996","ops":["COINING","PIERCING"]},{"n":"SUPPORT SPACER CLOCK SPRING","c":"6111623","ops":["BENDING","BLANKING"]},{"n":"TOP COVER MTG BRKT","c":"50020424/23","ops":["BENDING","BLANKING","PIEARCING"]},{"n":"TOP PLATE SCX","c":"30025091","ops":["BLANKING","FORMING","PIERCING","PUSH THROUGH","REWORK","V BENDING"]},{"n":"TOWEL BAR HINGE BRKT","c":"30018975","ops":["FORMING","PARTING","PIERCING","PROGRESSIVE"]},{"n":"U BRACKET","c":"50018068","ops":["BENDING","BLANKING & PIERCING"]},{"n":"UPPER ADAPTOR LH","c":"30001503/3001497","ops":["1st FORMING","1st PIERCING","2nd FORMING","2nd PIERCING","BLANKING","NOTCHING"]},{"n":"UPPER ADAPTOR RH","c":"30001503/3001497","ops":["1st FORMING","1st PIERCING","2nd FORMING","2nd PIERCING","BLANKING","NOTCHING"]},{"n":"UPPER INNER ADOPTER RH","c":"30014147","ops":["1st FORMING","2nd FORMONG","BLANKING","LANCING","PIERCING","PRE PIERCING","TRIMMING"]},{"n":"UPPER INNER BRKT RH","c":"30002368","ops":["1st FORMING","2nd FORMONG","BLANKING","LANCING","PIERCING","PRE PIERCING"]},{"n":"UPPER OTR ADOPTER LH","c":"30014144","ops":["1st FORMING","2nd FORMONG","BLANKING","PIERCING","PRE PIERCING","TRIMMING","bending"]},{"n":"UPPER OTR BRKT LH / RH","c":"30002354","ops":["1st FORMING","2nd FORMONG","BLANKING","PIERCING","PRE PIERCING","TRIMMING"]},{"n":"UPPER PART LH","c":"30015001/30015002","ops":["1st PIERCING","2nd FORMING","2nd PIERCING","BLANKING","IST FORMING","NOTCHING"]},{"n":"UPPER PART LH/RH","c":"30015001/30015002","ops":["1st PIERCING","2nd FORMING","2nd PIERCING","IST FORMING","NOTCHING"]},{"n":"UPPER PART RH","c":"30015001/30015002","ops":["1st PIERCING","2nd FORMING","2nd PIERCING","BLANKING","IST FORMING","NOTCHING"]},{"n":"UPPER RAIL","c":"30017646","ops":["1st FORMING","2nd FORMING","3nd FORMING","BLANKING","DEBBURING","LANCING","PIERCING","PRE PIERCING","REWORK","SIDE BENDING"]},{"n":"UPPER RAIL NEW","c":"30017646","ops":["1st FORMING","2nd FORMING","3rd FORMING","BLANKING","DEBBURING","LANCING","PIERCING","PRE PIERCING","REWORK","SIDE BENDING"]},{"n":"WASHER ISOLATOR 20MM","c":"30024032","ops":["BLANKING"]},{"n":"WORLD TRUCK LH","c":"30011416","ops":["1st PUSHTHROUGH","2nd PUSHTHROUGH","PIERCING"]},{"n":"WORLD TRUCK PRIMA LH","c":"30025172","ops":["1st PUSHTHROUGH","2ND DRAW","2nd PUSHTHROUGH","BENDING","CENTER PIERCING","DEBURRING","FIRST DRAW","FIRST SETTING","FOURTH DRAW","PIERCING","REWORK","SECOND SETTING","THIRD DRAW","TRIMMING","cropping"]},{"n":"WORLD TRUCK PRIMA LH/RH","c":"30025172","ops":["2ND DRAW","BENDING","CENTER PUSH THROUGH","DEBURRING","FIRST DRAW","FIRST SETTING","FOURTH DRAW","PIERCING","REWORK","SECOND SETTING","THIRD DRAW","TRIMMING","cropping"]},{"n":"WORLD TRUCK PRIMA RH","c":"30025172","ops":["1st PUSHTHROUGH","2ND DRAW","2nd PUSHTHROUGH","BENDING","CENTER PIERCING","CENTER PUSH THROUGH","DEBURRING","FIRST DRAW","FIRST SETTING","FOURTH DRAW","PIERCING","REWORK","SECOND SETTING","THIRD DRAW","TRIMMING","cropping"]},{"n":"WORLD TRUCK RH","c":"30011416","ops":["1st CONE","1st PUSHTHROUGH","2ND DRAW","2nd CONE","2nd PUSHTHROUGH","BENDING","CENTER PIERCING","FIRST DRAW","FIRST SETTING","FOURTH DRAW","PIERCING","SECOND SETTING","THIRD DRAW","TRIMMING","cropping"]},{"n":"X3 BCP","c":"30025408","ops":["CENTER PUSH THROUGH","CUT AND DRAW","PRE PIERCING","PUSH THROUGH","REWORK","SETTING","TRIMMING"]},{"n":"XBA BASE PLATE","c":"30016250","ops":["BLANKING","FIRST PIERCING","FORMING","SECOND PIERCING","SLOT PIERCING"]},{"n":"XBB BASE PLATE","c":"30019203","ops":["BLANKING","FIRST PIERCING","FORMING","SECOND PIERCING"]},{"n":"XH5 END COVER","c":"30024664","ops":["1st FORMING","2ND DRAW","2nd FORMING","BLANKING","CLOSING","FIRST DRAW","Final setting","LANCING","LEVELING","PIERCING","REVERSE DRAW","SLOT PIERCING","THIRD DRAW","TRIMMING"]},{"n":"YFG FRT TOP MTG BRKT LH/RH","c":"P2R30300/P2R40300","ops":["1st FORMING","2nd FORMING","BLANKING","PIERCING"]},{"n":"YFG RR TOP MTG BRKT RH/LH","c":"P2S40200/P2S30200","ops":["1st FORMING","2nd FORMING","BLANKING","PIERCING"]},{"n":"condor cup eicher","c":"sp02100550009-90","ops":["1st CONE","2ND DRAW","2ND SETTING","2nd CONE","CENTER PIERCING","CUT AND DRAW","FIRST SETTING","PRE-PIERCING","PUSHTHROUGH","REWORK","THIRD DRAW","TRIMMING"]}];
+
+const EMPLOYEES=[{"code":"602","name":"AMRITLAL KOL"},{"code":"630","name":"RAJKUMAR KOL"},{"code":"122","name":"ASHOK KUMAR"},{"code":"420","name":"BANSH BAHORE KOL"},{"code":"464","name":"BETTU SINGH"},{"code":"548","name":"CHANDAN KUMAR"},{"code":"619","name":"DADAN SINGH"},{"code":"357","name":"DEEPAK KUMAR SAKET"},{"code":"490","name":"JAYPAL SINGH"},{"code":"519","name":"KAMAL BHAN SINGH"},{"code":"365","name":"KAMAL PRATAP SINGH"},{"code":"576","name":"KASHIPRASAD KOL"},{"code":"618","name":"MAHENDRA PANNA"},{"code":"434","name":"MAHESH SINGH"},{"code":"522","name":"MANN SINGH"},{"code":"539","name":"MOHIT KOL"},{"code":"558","name":"MUNNU BABU"},{"code":"320","name":"PAWAN TIWARI"},{"code":"480","name":"PRADEEP SAKET"},{"code":"572","name":"PRAMJIT TIWARI"},{"code":"400","name":"PRAMOD KOL"},{"code":"361","name":"PREMLAL RAWAT"},{"code":"653","name":"PUSHPENDRA SINGH GOND"},{"code":"364","name":"RAJENDRA SINGH"},{"code":"260","name":"RAJESH KUMAR SAKET"},{"code":"577","name":"RAJESH SINGH"},{"code":"512","name":"RAJRAKHAN KOL"},{"code":"279","name":"RAJVALI SAKET"},{"code":"494","name":"RAMAN BAHADUR"},{"code":"261","name":"RAVIKUMAR SAKET"},{"code":"360","name":"REJENDRA KOL"},{"code":"562","name":"SACHIN SAKET"},{"code":"541","name":"SANJAY ADIVASI"},{"code":"356","name":"SAUKHILAL KOL"},{"code":"617","name":"SHAILESH KUMAR LAKRA"},{"code":"600","name":"SHIVAM SAKET"},{"code":"607","name":"SHIVKARAN SINGH"},{"code":"419","name":"SHIVKUMAR KOL"},{"code":"513","name":"SHYAM BAHADUR KOL"},{"code":"465","name":"VIJAY BAHADUR SINGH"},{"code":"544","name":"VINAY KUMAR"},{"code":"581","name":"VIREENDRA SAKET"},{"code":"432","name":"VINOD KUMAR M"},{"code":"604","name":"YOGENDRA SINGH"},{"code":"137","name":"SUKH LAL KOL"},{"code":"625","name":"BAYANSINGH GOND"},{"code":"626","name":"PREM LAL SINGH"},{"code":"628","name":"SUNIL KUMAR KOL"},{"code":"629","name":"BABLUKOL"},{"code":"278","name":"VIJAY BAHADUR KOL"},{"code":"283","name":"RAMASHRAY KOL"},{"code":"592","name":"VISUN BAHADUR"},{"code":"265","name":"GAURI SHANKAR KOL"},{"code":"418","name":"DALBEER GOND"},{"code":"322","name":"VINOD KUMAR KOL"},{"code":"579","name":"NABBU LAL KOL"},{"code":"627","name":"SURAJ KOL"},{"code":"516","name":"MUKESH THIGGA"},{"code":"128","name":"ASHOK PANDEY"},{"code":"268","name":"KALLU KOL"},{"code":"609","name":"DINESH KOL"},{"code":"585","name":"CHANDRA MOHAN"},{"code":"634","name":"RAMSUNDAR KOL"},{"code":"633","name":"RAJAN KOL"},{"code":"632","name":"RAHUL KOL"},{"code":"631","name":"SURESH KUMAR BAHALIYA"},{"code":"639","name":"PUSHPARAJ SING"},{"code":"637","name":"LAL JI  SING"},{"code":"638","name":"GENDLAL SINGH"},{"code":"643","name":"SUMIT MINZ"},{"code":"652","name":"AJEY BETHER"},{"code":"649","name":"DHANPATI SARMA"},{"code":"645","name":"K M SHARATH KUMAR"},{"code":"654","name":"RAJKUMAR SINGH GOND"},{"code":"538","name":"SUNIL KUMAR"},{"code":"655","name":"KUMBH RAJ SINGH"},{"code":"656","name":"RAJ KUMAR SINGH"},{"code":"471","name":"SHYAM LAL SINGH"},{"code":"606","name":"VINODKUMAR SINGH"},{"code":"624","name":"AKSHAY TIRKEY"},{"code":"270","name":"PRAMOD KUMAR KOL"},{"code":"660","name":"DHARMENDRA SAKET"},{"code":"661","name":"VIMALESH SAKET"},{"code":"663","name":"RAJESHWARI KOL"},{"code":"264","name":"PAVAN KUMAR KOL"},{"code":"666","name":"ROOPCHANDRA KUMAR"},{"code":"664","name":"MURA DEVAYAN"},{"code":"665","name":"DILEEP SAKET"},{"code":"669","name":"GANESH KUMAR SIGHH"},{"code":"667","name":"BABBU"},{"code":"672","name":"SANIDUL ISLAM"},{"code":"673","name":"NUR ALAM"},{"code":"671","name":"AMAN KUMAR"},{"code":"674","name":"SACHIN KUMAR"},{"code":"675","name":"PURUSOTTAM TOPPO"},{"code":"109","name":"SRIMAN"},{"code":"679","name":"BISHU GOUR"},{"code":"680","name":"VIPINKUMAR ADIVASI"},{"code":"682","name":"SUMANTA MAJHI"},{"code":"681","name":"KAMALURAVAN"},{"code":"676","name":"KRISHN KAMAN"},{"code":"685","name":"AJAY KOL"},{"code":"684","name":"RAZZAK ALI"},{"code":"686","name":"HABIJUL SHEIKH"},{"code":"694","name":"KORAN KUMAR"},{"code":"689","name":"RAMU KOL"},{"code":"701","name":"MUNMUN-SAH"},{"code":"702","name":"PONILAL"},{"code":"700","name":"BANTI KUMAR"},{"code":"706","name":"RANJAN"},{"code":"705","name":"LOKI RAM"},{"code":"713","name":"SHYAM NARAYAN SAKET"},{"code":"711","name":"LAXMANSINGH"},{"code":"710","name":"ACHAILAL KOL"},{"code":"712","name":"MONVAL"},{"code":"718","name":"VIKAS KOL"},{"code":"714","name":"SUDARSAN KOL"},{"code":"716","name":"SOVAL BHUMIG"},{"code":"358","name":"AVDESH RAWAT"},{"code":"725","name":"BISAN BIRLA"},{"code":"726","name":"SUJITH KUMAR MINZ"},{"code":"727","name":"PRADEEP KUMAR"},{"code":"723","name":"ASIK BRILA"},{"code":"704","name":"SANJAY SAWTAL"},{"code":"699","name":"ARVIND GUPTA"}];
+
+const MACHINES=[{"id":"TPM-34","ton":0},{"id":"PP-01","ton":160},{"id":"PP-02","ton":63},{"id":"PP-03","ton":63},{"id":"PP-04","ton":63},{"id":"PP-05","ton":110},{"id":"PP-06","ton":110},{"id":"PP-07","ton":125},{"id":"PP-08","ton":110},{"id":"PP-09","ton":60},{"id":"PP-10","ton":63},{"id":"PP-11","ton":63},{"id":"PP-12","ton":110},{"id":"PP-13","ton":160},{"id":"PP-14","ton":250},{"id":"PP-15","ton":110},{"id":"PP-16","ton":45},{"id":"PP-17","ton":63},{"id":"PP-18","ton":25},{"id":"PP-19","ton":63},{"id":"PP-20","ton":40},{"id":"PP-21","ton":40},{"id":"PP-22","ton":40},{"id":"PP-30","ton":160},{"id":"PP-31","ton":160},{"id":"HP-22","ton":125},{"id":"MP-23","ton":125},{"id":"HP-24","ton":125},{"id":"HP-25","ton":75},{"id":"HP-26","ton":125},{"id":"HP-27","ton":30},{"id":"HP-28","ton":75},{"id":"HP-29","ton":100},{"id":"DM","ton":0},{"id":"NEW MC","ton":160},{"id":"HG","ton":0},{"id":"MANUAL","ton":0},{"id":"SG-31","ton":0},{"id":"BG","ton":0}];
+
+const PART_NAMES=[...new Set(PARTS.map(p=>p.n))].sort();
+const EMP_NAMES=EMPLOYEES.map(e=>e.name).sort();
+const MC_IDS=MACHINES.map(m=>m.id);
+
+let plans=[],curShift='DAY',acActive=null,tChart=null,sChart=null;
+
+async function init(){
+  const t=new Date().toISOString().split('T')[0];
+  document.getElementById('entry-date').value=t;
+  // Load Sheets config
+  try{
+    const u=await window.storage.get('prodmis_gs_url');
+    const s=await window.storage.get('prodmis_gs_sheet');
+    if(u&&u.value){GS_URL=u.value;}
+    if(s&&s.value){GS_SHEET=s.value;}
+  }catch(e){}
+  if(GS_URL){
+    showLoader('Loading from Google Sheets…');
+    try{plans=await gsLoad();hideLoader();}
+    catch(e){hideLoader();toast('Sheets offline — using local cache','w');await loadLocal();}
+  } else {
+    await loadLocal();
+  }
+  addRows5();buildDash();
+  document.addEventListener('click',e=>{if(acActive&&!acActive.w.contains(e.target))closeAC();});
+}
+
+async function persist(){
+  try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
+  if(GS_URL) gsSave().catch(function(){});
+}
+
+// ── Nav ────────────────────────────────────────────────────────────────────
+function nav(pg,el){
+  document.querySelectorAll('.sbi').forEach(i=>i.classList.remove('on'));
+  if(el)el.classList.add('on');
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+pg).classList.add('active');
+  const fn={records:renderRecs,analytics:renderAna,machinewise:renderMC,partwise:renderPart,print:renderPrint,settings:initSettings};
+  if(fn[pg]) fn[pg]();
+}
+function gotoEntry(){nav('entry',document.querySelectorAll('.sbi')[1]);}
+
+// ── Dashboard ──────────────────────────────────────────────────────────────
+function buildDash(){
+  const all=plans.flatMap(p=>p.rows.map(r=>({...r,shift:p.shift,date:p.date})));
+  const pl=all.reduce((s,r)=>s+(r.planned||0),0);
+  const pr=all.reduce((s,r)=>s+(r.produced||0),0);
+  const rj=all.reduce((s,r)=>s+(r.rejected||0),0);
+  const eff=pl>0?Math.round(pr/pl*100):0;
+  const dates=[...new Set(plans.map(p=>p.date))].sort();
+  const fmt=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+  document.getElementById('kv-rev').textContent='₹'+((pr*0.75)/100000).toFixed(1)+'L';
+  document.getElementById('ks-rev').textContent=dates.length?fmt(dates[0])+' – '+fmt(dates[dates.length-1]):'No data';
+  document.getElementById('kv-prod').textContent=(pr/1000000).toFixed(2)+'M';
+  document.getElementById('ks-prod').textContent=pr.toLocaleString()+' pieces';
+  document.getElementById('kv-eff').textContent=eff+'%';
+  document.getElementById('kv-rej').textContent=rj.toLocaleString();
+  document.getElementById('ks-rej').textContent=pl>0?(rj/pl*100).toFixed(3)+'% rejection rate':'—';
+  document.getElementById('kv-ent').textContent=all.length.toLocaleString();
+  document.getElementById('ks-ent').textContent=plans.length+' plans, '+[...new Set(plans.map(p=>p.date))].length+' days';
+  document.getElementById('dash-sub').textContent=dates.length?'AKME Technologies · '+fmt(dates[0])+' – '+fmt(dates[dates.length-1]):'AKME Technologies, Bangalore';
+
+  // Recent
+  const rb=document.getElementById('recent-tbody');
+  const rec=all.slice(-10).reverse();
+  if(!rec.length){rb.innerHTML='<tr><td colspan="9" class="empty-st">No entries yet.</td></tr>';}
+  else{rb.innerHTML=rec.map(r=>{const e=r.planned>0?Math.round(r.produced/r.planned*100):0;const ec=e>=80?'#27ae60':e>=60?'#e67e22':'#c0392b';return`<tr><td>${r.date?new Date(r.date+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short'}):'—'}</td><td><span class="badge ${r.shift==='DAY'?'bd':'bn'}">${r.shift||'—'}</span></td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.part_name||'—'}</td><td>${r.operation||'—'}</td><td>${r.machine||'—'}</td><td style="text-align:right">${(r.planned||0).toLocaleString()}</td><td style="text-align:right;color:#27ae60;font-weight:500">${(r.produced||0).toLocaleString()}</td><td style="text-align:right;color:${ec};font-weight:500">${e}%</td></tr>`}).join('');}
+
+  // Trend chart
+  const byD={};
+  all.forEach(r=>{if(!r.date)return;byD[r.date]=byD[r.date]||{pl:0,pr:0};byD[r.date].pl+=r.planned||0;byD[r.date].pr+=r.produced||0;});
+  const dk=Object.keys(byD).sort().slice(-10);
+  const labels=dk.map(d=>new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short'}));
+  document.getElementById('trend-rng').textContent=labels.length?labels[0]+' – '+labels[labels.length-1]:'';
+  const tc=document.getElementById('ch-trend');
+  if(tChart)tChart.destroy();
+  if(labels.length){tChart=new Chart(tc,{type:'bar',data:{labels,datasets:[{label:'Planned',data:dk.map(d=>byD[d].pl),backgroundColor:'#dbeafe',borderColor:'#3b82f6',borderWidth:1,borderRadius:3},{label:'Produced',data:dk.map(d=>byD[d].pr),backgroundColor:'#dcfce7',borderColor:'#22c55e',borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:10},boxWidth:10}}},scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{ticks:{font:{size:9}}}}}});}
+
+  // Shift donut
+  const dp=all.filter(r=>r.shift==='DAY').reduce((s,r)=>s+(r.produced||0),0);
+  const np=all.filter(r=>r.shift==='NIGHT').reduce((s,r)=>s+(r.produced||0),0);
+  const sc=document.getElementById('ch-shift');
+  if(sChart)sChart.destroy();
+  if(dp+np>0){sChart=new Chart(sc,{type:'doughnut',data:{labels:['Day','Night'],datasets:[{data:[dp,np],backgroundColor:['#fef3c7','#ede9fe'],borderColor:['#f59e0b','#8b5cf6'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10}}}}});}
+}
+
+// ── All Records ────────────────────────────────────────────────────────────
+function renderRecs(q=''){
+  const c=document.getElementById('recs-content');
+  const sorted=[...plans].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const fil=q?sorted.filter(p=>JSON.stringify(p).toLowerCase().includes(q.toLowerCase())):sorted;
+  document.getElementById('rec-sub').textContent=fil.length+' of '+plans.length+' plans';
+  if(!fil.length){c.innerHTML='<div class="empty-st">No records found.</div>';return;}
+  c.innerHTML=fil.map(p=>{
+    const pl=p.rows.reduce((s,r)=>s+(r.planned||0),0);
+    const pr=p.rows.reduce((s,r)=>s+(r.produced||0),0);
+    const pct=pl>0?Math.round(pr/pl*100):0;
+    const fc=pct>=80?'#27ae60':pct>=60?'#e67e22':'#c0392b';
+    const ds=new Date(p.date+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    const rowsHtml=p.rows.map((r,ri)=>`<tr style="background:${ri%2===0?'#fff':'#fafaf8'}">
+      <td style="padding:5px 7px;text-align:center;color:#aaa;font-size:10px">${r.sl||ri+1}</td>
+      <td style="padding:5px 7px;font-weight:500;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.part_name||'—'}</td>
+      <td style="padding:5px 7px;color:#999;font-size:10px">${r.part_code||'—'}</td>
+      <td style="padding:5px 7px">${r.operation||'—'}</td>
+      <td style="padding:5px 7px">${r.machine||'—'}</td>
+      <td style="padding:5px 7px;text-align:right">${(r.planned||0).toLocaleString()}</td>
+      <td style="padding:5px 7px;text-align:right;color:#27ae60;font-weight:500">${(r.produced||0).toLocaleString()}</td>
+      <td style="padding:5px 7px;text-align:right;color:#c0392b">${(r.rejected||0).toLocaleString()}</td>
+      <td style="padding:5px 7px;text-align:center;white-space:nowrap">
+        <button onclick="editRow(${p.id},${ri})" style="padding:2px 7px;font-size:10px;border:0.5px solid #2980b9;background:#eaf2fb;color:#1a5276;border-radius:4px;cursor:pointer;font-family:inherit">Edit</button>
+        <button onclick="deleteRow(${p.id},${ri})" style="padding:2px 7px;font-size:10px;border:0.5px solid #e74c3c;background:#fdf0ef;color:#c0392b;border-radius:4px;cursor:pointer;margin-left:2px;font-family:inherit">Del</button>
+      </td>
+    </tr>`).join('');
+    return`<div class="tc" style="margin-bottom:10px">
+      <div class="tc-hd" style="flex-wrap:wrap;gap:8px">
+        <div><div style="display:flex;align-items:center;gap:8px;margin-bottom:2px"><span style="font-size:13px;font-weight:500">${ds}</span><span class="badge ${p.shift==='DAY'?'bd':'bn'}">${p.shift}</span></div>
+        <div style="font-size:11px;color:#888">${p.rows.length} rows · Planned: <b style="color:#333">${pl.toLocaleString()}</b> · Produced: <b style="color:${fc}">${pr.toLocaleString()}</b> <span style="color:${fc}">(${pct}%)</span></div>
+        <div class="pb" style="margin-top:4px"><div class="pf" style="width:${Math.min(pct,100)}%;background:${fc}"></div></div></div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          <button class="btn-o" onclick="loadForm(${p.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Plan</button>
+          <button class="btn-o" onclick="showPrint(${p.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print</button>
+          <button class="btn-o" style="color:#c0392b" onclick="delPlan(${p.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>Delete Plan</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;border:1px solid #f0efeb;border-radius:6px;margin-top:8px">
+      <table style="width:100%;border-collapse:collapse;font-size:11px">
+        <thead><tr style="background:#2c3e50">${['#','Part Name','Code','Operation','M/C','Planned','Produced','Rejected','Actions'].map(h=>`<th style="padding:6px 7px;text-align:left;color:#b8c5d3;font-size:10px;font-weight:500;white-space:nowrap">${h}</th>`).join('')}</tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table></div>
+    </div>`;
+  }).join('');
+}
+function filterRecs(q){renderRecs(q);}
+
+async function deleteRow(planId, rowIdx){
+  const p=plans.find(x=>x.id===planId); if(!p) return;
+  const r=p.rows[rowIdx];
+  if(!confirm('Delete row:\n'+(r.part_name||'?')+' — '+(r.operation||'?')+'\nPlanned: '+(r.planned||0)+', Produced: '+(r.produced||0)+'\n\nThis cannot be undone.')) return;
+  p.rows.splice(rowIdx,1);
+  await persist();
+  buildDash();
+  renderRecs(document.querySelector('.srch').value||'');
+  toast('Row deleted');
+}
+
+function editRow(planId, rowIdx){
+  const p=plans.find(x=>x.id===planId); if(!p) return;
+  const r=p.rows[rowIdx];
+  const mcOpts=MACHINES.map(m=>`<option value="${m.id}"${r.machine===m.id?' selected':''}>${m.id}</option>`).join('');
+  document.getElementById('modal-root').innerHTML=`
+  <div style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:10px;padding:1.5rem;width:100%;max-width:540px;box-shadow:0 8px 30px rgba(0,0,0,.2)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid #eee">
+      <div style="font-size:14px;font-weight:500">Edit Row</div>
+      <button onclick="document.getElementById('modal-root').innerHTML=''" style="padding:4px 10px;border:0.5px solid #ddd;border-radius:6px;font-size:11px;cursor:pointer;background:#fff">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Part Name</label><input id="er-part" class="fi" value="${(r.part_name||'').replace(/"/g,'&quot;')}"></div>
+      <div class="fg"><label class="fl">Part Code</label><input id="er-code" class="fi" value="${(r.part_code||'').replace(/"/g,'&quot;')}"></div>
+      <div class="fg"><label class="fl">Operation</label><input id="er-op" class="fi" value="${(r.operation||'').replace(/"/g,'&quot;')}"></div>
+      <div class="fg"><label class="fl">Machine</label><select id="er-mc" class="fi"><option value="">—</option>${mcOpts}</select></div>
+      <div class="fg"><label class="fl">Planned</label><input id="er-pl" class="fi" type="number" value="${r.planned||0}" min="0"></div>
+      <div class="fg"><label class="fl">Produced</label><input id="er-pr" class="fi" type="number" value="${r.produced||0}" min="0"></div>
+      <div class="fg"><label class="fl">Rejected</label><input id="er-rj" class="fi" type="number" value="${r.rejected||0}" min="0"></div>
+      <div class="fg" style="grid-column:1/-1"><label class="fl">Remarks</label><input id="er-rem" class="fi" value="${(r.remarks||'').replace(/"/g,'&quot;')}"></div>
+    </div>
+    <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px">
+      <button onclick="document.getElementById('modal-root').innerHTML=''" class="btn-o">Cancel</button>
+      <button onclick="saveRowEdit(${planId},${rowIdx})" class="btn-p">Save Changes</button>
+    </div>
+  </div></div>`;
+}
+
+async function saveRowEdit(planId, rowIdx){
+  const p=plans.find(x=>x.id===planId); if(!p) return;
+  p.rows[rowIdx]={
+    ...p.rows[rowIdx],
+    part_name:document.getElementById('er-part').value.trim(),
+    part_code:document.getElementById('er-code').value.trim(),
+    operation:document.getElementById('er-op').value.trim(),
+    machine:document.getElementById('er-mc').value,
+    planned:parseInt(document.getElementById('er-pl').value)||0,
+    produced:parseInt(document.getElementById('er-pr').value)||0,
+    rejected:parseInt(document.getElementById('er-rj').value)||0,
+    remarks:document.getElementById('er-rem').value.trim(),
+  };
+  await persist();
+  buildDash();
+  document.getElementById('modal-root').innerHTML='';
+  renderRecs(document.querySelector('.srch').value||'');
+  toast('Row updated');
+}
+
+// ── Export to Excel ─────────────────────────────────────────────────────────
+function exportExcel(){
+  const q=document.querySelector('.srch').value||'';
+  const sorted=[...plans].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const fil=q?sorted.filter(p=>JSON.stringify(p).toLowerCase().includes(q.toLowerCase())):sorted;
+  const allRows=fil.flatMap(p=>p.rows.map(r=>({
+    Date:p.date,
+    Shift:p.shift,
+    Sl:r.sl||'',
+    PartName:r.part_name||'',
+    PartCode:r.part_code||'',
+    Operation:r.operation||'',
+    Machine:r.machine||'',
+    Planned:r.planned||0,
+    Produced:r.produced||0,
+    Rejected:r.rejected||0,
+    Efficiency:r.planned>0?Math.round(r.produced/r.planned*100)+'%':'—',
+    Remarks:r.remarks||''
+  })));
+  if(!allRows.length){toast('No data to export','w');return;}
+  const bom='﻿';
+  const headers=Object.keys(allRows[0]);
+  const rows=allRows.map(r=>headers.map(h=>{
+    const v=r[h];
+    return typeof v==='string'&&(v.includes(',')||v.includes('"'))?'"'+v.replace(/"/g,'""')+'"':v;
+  }).join(','));
+  const csv=bom+headers.join(',')+'\n'+rows.join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='ProdMIS_Export_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Exported '+allRows.length+' rows');
+}
+
+// ── Analytics ──────────────────────────────────────────────────────────────
+function anaCard(title,rows){return`<div class="tc"><div class="tc-hd"><div class="tc-title">${title}</div></div><table class="dt"><thead><tr>${Object.keys(rows[0]).map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${Object.values(r).map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;}
+function renderAna(){
+  const c=document.getElementById('ana-content');
+  const all=plans.flatMap(p=>p.rows.map(r=>({...r,shift:p.shift,date:p.date})));
+  if(!all.length){c.innerHTML='<div class="empty-st">No data yet.</div>';return;}
+  const pl=all.reduce((s,r)=>s+(r.planned||0),0);
+  const pr=all.reduce((s,r)=>s+(r.produced||0),0);
+  const rj=all.reduce((s,r)=>s+(r.rejected||0),0);
+  const eff=pl>0?Math.round(pr/pl*100):0;
+  const ds=plans.filter(p=>p.shift==='DAY');const ns=plans.filter(p=>p.shift==='NIGHT');
+  const da=ds.flatMap(p=>p.rows);const na=ns.flatMap(p=>p.rows);
+  c.innerHTML=`<div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi bl"><div class="kpi-lbl">Total Planned</div><div class="kpi-val">${pl.toLocaleString()}</div></div>
+    <div class="kpi gr"><div class="kpi-lbl">Total Produced</div><div class="kpi-val">${pr.toLocaleString()}</div></div>
+    <div class="kpi or"><div class="kpi-lbl">Efficiency</div><div class="kpi-val">${eff}%</div></div>
+    <div class="kpi re"><div class="kpi-lbl">Rejected</div><div class="kpi-val">${rj.toLocaleString()}</div><div class="kpi-sub">${pl>0?(rj/pl*100).toFixed(3)+'%':''}</div></div>
+  </div>`+anaCard('Shift Comparison',[
+    {'Shift':'Day','Plans':ds.length,'Planned':da.reduce((s,r)=>s+(r.planned||0),0).toLocaleString(),'Produced':da.reduce((s,r)=>s+(r.produced||0),0).toLocaleString(),'Efficiency':da.reduce((s,r)=>s+(r.planned||0),0)>0?Math.round(da.reduce((s,r)=>s+(r.produced||0),0)/da.reduce((s,r)=>s+(r.planned||0),0)*100)+'%':'—'},
+    {'Shift':'Night','Plans':ns.length,'Planned':na.reduce((s,r)=>s+(r.planned||0),0).toLocaleString(),'Produced':na.reduce((s,r)=>s+(r.produced||0),0).toLocaleString(),'Efficiency':na.reduce((s,r)=>s+(r.planned||0),0)>0?Math.round(na.reduce((s,r)=>s+(r.produced||0),0)/na.reduce((s,r)=>s+(r.planned||0),0)*100)+'%':'—'},
+  ]);
+}
+
+// ── Machine Wise ───────────────────────────────────────────────────────────
+function renderMC(){
+  const c=document.getElementById('mc-content');
+  const all=plans.flatMap(p=>p.rows);
+  if(!all.length){c.innerHTML='<div class="empty-st">No data.</div>';return;}
+  const bm={};all.forEach(r=>{const m=r.machine||'Unknown';bm[m]=bm[m]||{pl:0,pr:0,rj:0,cnt:0};bm[m].pl+=r.planned||0;bm[m].pr+=r.produced||0;bm[m].rj+=r.rejected||0;bm[m].cnt++;});
+  const rows=Object.entries(bm).sort((a,b)=>b[1].pr-a[1].pr);
+  const ton=id=>{const m=MACHINES.find(x=>x.id===id);return m?m.ton+'T':'—';};
+  c.innerHTML=`<div class="tc"><table class="dt"><thead><tr><th>Machine</th><th>Tonnage</th><th>Entries</th><th>Planned</th><th>Produced</th><th>Rejected</th><th>Efficiency</th></tr></thead><tbody>${rows.map(([m,d])=>{const e=d.pl>0?Math.round(d.pr/d.pl*100):0;const ec=e>=80?'#27ae60':e>=60?'#e67e22':'#c0392b';return`<tr><td><b>${m}</b></td><td style="color:#aaa">${ton(m)}</td><td>${d.cnt}</td><td style="text-align:right">${d.pl.toLocaleString()}</td><td style="text-align:right;color:#27ae60;font-weight:500">${d.pr.toLocaleString()}</td><td style="text-align:right;color:#c0392b">${d.rj.toLocaleString()}</td><td style="text-align:right;color:${ec};font-weight:500">${e}%</td></tr>`}).join('')}</tbody></table></div>`;
+}
+
+
+// ── Part Wise ──────────────────────────────────────────────────────────────
+function renderPart(){
+  const c=document.getElementById('part-content');
+  const all=plans.flatMap(p=>p.rows);
+  if(!all.length){c.innerHTML='<div class="empty-st">No data.</div>';return;}
+  const bp={};all.forEach(r=>{const k=(r.part_name||'Unknown')+(r.operation?' – '+r.operation:'');bp[k]=bp[k]||{pl:0,pr:0,cnt:0,code:r.part_code||''};bp[k].pl+=r.planned||0;bp[k].pr+=r.produced||0;bp[k].cnt++;});
+  const rows=Object.entries(bp).sort((a,b)=>b[1].pr-a[1].pr).slice(0,40);
+  c.innerHTML=`<div class="tc"><table class="dt"><thead><tr><th>Part + Operation</th><th>Code</th><th>Entries</th><th>Planned</th><th>Produced</th><th>Efficiency</th></tr></thead><tbody>${rows.map(([k,d])=>{const e=d.pl>0?Math.round(d.pr/d.pl*100):0;const ec=e>=80?'#27ae60':e>=60?'#e67e22':'#c0392b';return`<tr><td style="max-width:260px">${k}</td><td style="color:#aaa">${d.code}</td><td>${d.cnt}</td><td style="text-align:right">${d.pl.toLocaleString()}</td><td style="text-align:right;color:#27ae60;font-weight:500">${d.pr.toLocaleString()}</td><td style="text-align:right;color:${ec};font-weight:500">${e}%</td></tr>`}).join('')}</tbody></table></div>`;
+}
+
+// ── Print page ─────────────────────────────────────────────────────────────
+function renderPrint(){
+  const c=document.getElementById('print-content');
+  if(!plans.length){c.innerHTML='<div class="empty-st">No plans saved yet.</div>';return;}
+  const s=[...plans].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  c.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">'+s.map(p=>{
+    const pl=p.rows.reduce((s,r)=>s+(r.planned||0),0);
+    const pr=p.rows.reduce((s,r)=>s+(r.produced||0),0);
+    const pct=pl>0?Math.round(pr/pl*100):0;
+    const fc=pct>=80?'#27ae60':pct>=60?'#e67e22':'#c0392b';
+    const ds=new Date(p.date+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    return`<div style="background:#fff;border:1px solid #e8e5de;border-radius:8px;padding:13px;border-left:3px solid ${p.shift==='DAY'?'#f59e0b':'#8b5cf6'}">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><div><div style="font-size:13px;font-weight:500">${ds}</div><span class="badge ${p.shift==='DAY'?'bd':'bn'}">${p.shift}</span></div><div style="font-size:11px;color:#aaa">${p.rows.length} rows</div></div>
+      <div style="font-size:11px;color:#888;margin-bottom:9px">Planned: ${pl.toLocaleString()} · Produced: <span style="color:${fc}">${pr.toLocaleString()}</span> (${pct}%)</div>
+      <button class="btn-o" style="width:100%;justify-content:center" onclick="showPrint(${p.id})"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print this plan</button>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+// ── Print Preview Modal ────────────────────────────────────────────────────
+function showPrint(id){
+  const p=plans.find(x=>x.id===id);if(!p)return;
+  const ds=new Date(p.date+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const pl=p.rows.reduce((s,r)=>s+(r.planned||0),0);
+  const pr=p.rows.reduce((s,r)=>s+(r.produced||0),0);
+  const rj=p.rows.reduce((s,r)=>s+(r.rejected||0),0);
+  const eff=pl>0?Math.round(pr/pl*100):0;
+  const mr=document.getElementById('modal-root');
+  mr.innerHTML=`<div style="background:rgba(0,0,0,.5);padding:1.5rem;border-radius:8px">
+  <div id="pp" style="background:#fff;border-radius:8px;padding:1.5rem;max-width:960px;margin:0 auto">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #eee">
+      <div><div style="font-size:17px;font-weight:500">AKME Technologies Bangalore</div><div style="font-size:11px;color:#888;margin-top:2px">Shiftwise Daily Production Plan &nbsp;·&nbsp; AKME/F/03 &nbsp;·&nbsp; Rev 2</div></div>
+      <div style="text-align:right"><div style="font-size:12px;font-weight:500">Date: ${ds}</div><div style="font-size:11px;color:#888;margin-top:2px">Shift: <b style="color:${p.shift==='DAY'?'#d97706':'#7c3aed'}">${p.shift}</b>&nbsp;·&nbsp;${p.remarks?' · '+p.remarks:''}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+      <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:9px;text-align:center"><div style="font-size:9px;color:#0369a1;font-weight:500;text-transform:uppercase;letter-spacing:.05em">Planned</div><div style="font-size:18px;font-weight:500;color:#0c4a6e">${pl.toLocaleString()}</div></div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:9px;text-align:center"><div style="font-size:9px;color:#15803d;font-weight:500;text-transform:uppercase;letter-spacing:.05em">Produced</div><div style="font-size:18px;font-weight:500;color:#14532d">${pr.toLocaleString()}</div></div>
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;padding:9px;text-align:center"><div style="font-size:9px;color:#c2410c;font-weight:500;text-transform:uppercase;letter-spacing:.05em">Rejected</div><div style="font-size:18px;font-weight:500;color:#7c2d12">${rj.toLocaleString()}</div></div>
+      <div style="background:#fafaf9;border:1px solid #e7e5e4;border-radius:6px;padding:9px;text-align:center"><div style="font-size:9px;color:#57534e;font-weight:500;text-transform:uppercase;letter-spacing:.05em">Efficiency</div><div style="font-size:18px;font-weight:500;color:${eff>=80?'#15803d':eff>=60?'#d97706':'#dc2626'}">${eff}%</div></div>
+    </div>
+    <div style="overflow-x:auto;border:1px solid #e5e2db;border-radius:6px">
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead><tr style="background:#2c3e50">${['Sl.','Part Name','Part Code','Operation','M/C No.','Planned','Produced','Rejected','Remarks'].map(h=>`<th style="padding:7px 8px;text-align:left;color:#b8c5d3;font-size:10px;font-weight:500;white-space:nowrap">${h}</th>`).join('')}</tr></thead>
+      <tbody>${p.rows.map((r,i)=>`<tr style="background:${i%2===0?'#fff':'#f9f8f6'}">
+        <td style="padding:6px 8px;text-align:center"><span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;background:#fdf0ed;color:#c0392b;border-radius:50%;font-size:9px;font-weight:500">${r.sl||i+1}</span></td>
+        <td style="padding:6px 8px;font-weight:500">${r.part_name||''}</td>
+        <td style="padding:6px 8px;color:#999">${r.part_code||''}</td>
+        <td style="padding:6px 8px">${r.operation||''}</td>
+        <td style="padding:6px 8px">${r.machine||''}</td>
+        <td style="padding:6px 8px;text-align:right">${(r.planned||0).toLocaleString()}</td>
+        <td style="padding:6px 8px;text-align:right;color:${(r.produced||0)>0?'#15803d':'#aaa'};font-weight:${(r.produced||0)>0?'500':'400'}">${(r.produced||0)>0?(r.produced||0).toLocaleString():'-'}</td>
+        <td style="padding:6px 8px;text-align:right;color:${(r.rejected||0)>0?'#dc2626':'#aaa'}">${(r.rejected||0)>0?(r.rejected||0).toLocaleString():'-'}</td>
+        <td style="padding:6px 8px;color:#888">${r.remarks||''}</td>
+      </tr>`).join('')}
+      <tr style="background:#f0f9ff"><td colspan="6" style="padding:7px 8px;text-align:right;color:#0369a1;font-weight:500;font-size:10px">TOTAL</td><td style="padding:7px 8px;text-align:right;color:#0c4a6e;font-weight:500">${pl.toLocaleString()}</td><td style="padding:7px 8px;text-align:right;color:#14532d;font-weight:500">${pr.toLocaleString()}</td><td style="padding:7px 8px;text-align:right;color:#7c2d12;font-weight:500">${rj.toLocaleString()}</td><td></td></tr>
+      </tbody>
+    </table></div>
+    <div style="margin-top:12px;display:flex;justify-content:space-between;font-size:10px;color:#aaa;border-top:1px solid #f0efeb;padding-top:10px">
+      <span>Approved by: ___________________</span><span>Reviewed by: ___________________</span><span>Prepared by: ${p.preparedBy||'___________________'}</span>
+    </div>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:7px;justify-content:center">
+    <button class="btn-o" onclick="document.getElementById('modal-root').innerHTML=''">Close</button>
+    <button class="btn-p" onclick="doPrint()"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print</button>
+  </div></div>`;
+}
+
+function doPrint(){
+  const el=document.getElementById('pp');if(!el)return;
+  const w=window.open('','_blank');
+  w.document.write('<html><head><title>AKME Production Plan</title><style>body{font-family:Arial,sans-serif;margin:16px;font-size:11px}table{width:100%;border-collapse:collapse}th{background:#2c3e50;color:#fff;padding:6px 8px;text-align:left;font-size:10px}td{padding:6px 8px;border-bottom:1px solid #eee}.alt{background:#f9f8f6}</style></head><body>');
+  w.document.write(el.innerHTML);
+  w.document.write('</body></html>');
+  w.document.close();w.focus();
+  setTimeout(()=>{w.print();w.close();},400);
+}
+
+// ── Entry Form ─────────────────────────────────────────────────────────────
+function searchParts(q){if(!q||q.length<2)return[];const u=q.toUpperCase();return PART_NAMES.filter(n=>u.split(/\s+/).filter(Boolean).every(w=>n.toUpperCase().includes(w))).slice(0,16);}
+function searchOps(pn,q){const ms=PARTS.filter(p=>p.n===pn);if(!ms.length)return[];const all=[...new Set(ms.flatMap(p=>p.ops))].sort();if(!q)return all.slice(0,20);const u=q.toUpperCase();return all.filter(o=>o.toUpperCase().includes(u)).slice(0,20);}
+function searchEmps(q){if(!q||q.length<2)return[];const u=q.toUpperCase();return EMP_NAMES.filter(n=>n.toUpperCase().includes(u)).slice(0,14);}
+function hl(t,q){if(!q)return t;const ws=q.trim().split(/\s+/).filter(Boolean);let o=t;ws.forEach(w=>{const re=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');o=o.replace(re,'<mark>$1</mark>');});return o;}
+
+function openDD(wrap,items,onSel,q=''){
+  closeAC();if(!items.length)return;
+  let dd=wrap.querySelector('.ac-drop');
+  if(!dd){dd=document.createElement('div');dd.className='ac-drop';wrap.appendChild(dd);}
+  dd.innerHTML=items.map((it,i)=>`<div class="ac-it ${i===0?'hi':''}" data-i="${i}">${hl(it,q)}</div>`).join('')+`<div class="ac-ft">${items.length} result${items.length!==1?'s':''}</div>`;
+  dd.style.display='block';
+  acActive={w:wrap,dd,items,onSel};
+  dd.querySelectorAll('.ac-it').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();onSel(items[+el.dataset.i]);closeAC();}));
+}
+function closeAC(){if(acActive)acActive.dd.style.display='none';acActive=null;}
+function navAC(e){
+  if(!acActive)return;
+  const {dd,items,onSel}=acActive;
+  const all=[...dd.querySelectorAll('.ac-it')];const cur=dd.querySelector('.ac-it.hi');const idx=all.indexOf(cur);
+  if(e.key==='ArrowDown'){e.preventDefault();cur&&cur.classList.remove('hi');all[Math.min(idx+1,all.length-1)].classList.add('hi');}
+  else if(e.key==='ArrowUp'){e.preventDefault();cur&&cur.classList.remove('hi');all[Math.max(idx-1,0)].classList.add('hi');}
+  else if(e.key==='Enter'||e.key==='Tab'){if(cur){e.preventDefault();onSel(items[all.indexOf(cur)]);closeAC();}}
+  else if(e.key==='Escape'){closeAC();}
+}
+
+
+function addRow(data){
+  const tbody=document.getElementById('entry-body');
+  const idx=tbody.rows.length+1;
+  const d=data||{};
+  const mo=MC_IDS.map(m=>`<option value="${m}" ${d.machine===m?'selected':''}>${m}</option>`).join('');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td style="text-align:center;padding:5px 2px"><span class="rn">${idx}</span></td>
+    <td class="ac-wrap"><input type="text" class="pni" placeholder="Search part…" value="${d.part_name||''}" autocomplete="off" style="width:178px"></td>
+    <td><input type="text" class="pci" placeholder="Code" value="${d.part_code||''}" style="width:70px"></td>
+    <td class="ac-wrap"><input type="text" class="opi" placeholder="Search op…" value="${d.operation||''}" autocomplete="off" style="width:148px"></td>
+    <td><select style="width:76px"><option value="">—</option>${mo}</select></td>
+    <td><input type="number" class="pli" placeholder="0" value="${d.planned||''}" min="0" style="width:62px;text-align:right"></td>
+    <td><input type="number" class="pri" placeholder="0" value="${d.produced||''}" min="0" style="width:62px;text-align:right"></td>
+    <td><input type="number" class="rji" placeholder="0" value="${d.rejected||''}" min="0" style="width:54px;text-align:right"></td>
+    <td><input type="text" class="rmi" placeholder="Notes…" value="${d.remarks||''}" style="width:92px"></td>
+    <td><button class="bx" onclick="remRow(this)">×</button></td>
+    <td class="no-print" style="text-align:right;padding:4px 6px;font-size:11px;font-family:monospace;background:#f0f9ff"><span class="pph-cell" style="color:#ccc">—</span></td>
+    <td class="no-print" style="text-align:right;padding:4px 6px;font-size:11px;font-family:monospace;background:#f0f9ff"><span class="hrs-cell" style="color:#ccc">—</span></td>
+  `;
+  tbody.appendChild(tr);
+  const pni=tr.querySelector('.pni'),pci=tr.querySelector('.pci'),opi=tr.querySelector('.opi');
+  const pnw=tr.cells[1],opw=tr.cells[3];
+  pni.addEventListener('input',()=>{const res=searchParts(pni.value);if(res.length)openDD(pnw,res,n=>{pni.value=n;const ms=PARTS.filter(p=>p.n===n);if(ms.length&&ms.every(p=>p.c===ms[0].c))pci.value=ms[0].c;updatePphCells(tr);const ops=searchOps(n,'');if(ops.length)openDD(opw,ops,op=>{opi.value=op;updatePphCells(tr);},'');},pni.value);else closeAC();});
+  pni.addEventListener('focus',()=>{if(pni.value.length>=2){const r=searchParts(pni.value);if(r.length)openDD(pnw,r,n=>{pni.value=n;const ms=PARTS.filter(p=>p.n===n);if(ms.length&&ms.every(p=>p.c===ms[0].c))pci.value=ms[0].c;},pni.value);}});
+  pni.addEventListener('keydown',navAC);
+  opi.addEventListener('focus',()=>{const ops=searchOps(pni.value,opi.value);if(ops.length)openDD(opw,ops,op=>{opi.value=op;updatePphCells(tr);},opi.value);});
+  opi.addEventListener('input',()=>{const ops=searchOps(pni.value,opi.value);if(ops.length)openDD(opw,ops,op=>{opi.value=op;updatePphCells(tr);},opi.value);else closeAC();});
+  opi.addEventListener('keydown',navAC);
+  var upd=function(){updatePphCells(tr);};
+  tr.querySelector('.pli').addEventListener('input',upd);
+  // Wire into autocomplete selections via patched openDD calls below
+  if(d.part_name&&d.operation) setTimeout(upd,0);
+  updateRC();
+}
+
+function addRows5(){for(let i=0;i<5;i++)addRow();}
+function remRow(btn){btn.closest('tr').remove();renum();updateRC();}
+function renum(){document.querySelectorAll('#entry-body tr').forEach((tr,i)=>{const s=tr.querySelector('.rn');if(s)s.textContent=i+1;});}
+function updateRC(){const n=document.getElementById('entry-body').rows.length;document.getElementById('row-count').textContent='('+n+' rows)';}
+function setShift(s){curShift=s;document.getElementById('sh-day').classList.toggle('sel',s==='DAY');document.getElementById('sh-night').classList.toggle('sel',s==='NIGHT');}
+
+function getRows(){
+  return[...document.querySelectorAll('#entry-body tr')].map((tr,i)=>({
+    sl:i+1,
+    part_name:tr.querySelector('.pni').value.trim(),
+    part_code:tr.querySelector('.pci').value.trim(),
+    operation:tr.querySelector('.opi').value.trim(),
+    machine:tr.querySelector('select').value,
+    planned:parseInt(tr.querySelector('.pli').value)||0,
+    produced:parseInt(tr.querySelector('.pri').value)||0,
+    rejected:parseInt(tr.querySelector('.rji').value)||0,
+    remarks:tr.querySelector('.rmi').value.trim(),
+  })).filter(r=>r.part_name||r.operation||r.planned);
+}
+
+async function savePlan(){
+  const date=document.getElementById('entry-date').value;
+  const rows=getRows();
+  if(!date){toast('Select a date','w');return;}
+  if(!rows.length){toast('Add at least one entry','w');return;}
+  const plan={id:Date.now(),date,shift:curShift,
+    remarks:document.getElementById('g-remarks').value.trim(),
+    rows,savedAt:new Date().toISOString()};
+  plans.push(plan);
+  await persist();
+  buildDash();
+  toast('Plan saved successfully');
+  showPrint(plan.id);
+}
+
+function clearForm(){
+  document.getElementById('entry-body').innerHTML='';
+  document.getElementById('g-remarks').value='';
+  addRows5();
+}
+
+function loadForm(id){
+  const p=plans.find(x=>x.id===id);if(!p)return;
+  document.getElementById('entry-date').value=p.date;
+  document.getElementById('g-remarks').value=p.remarks||'';
+  setShift(p.shift);
+  document.getElementById('entry-body').innerHTML='';
+  p.rows.forEach(r=>addRow(r));
+  updateRC();
+  nav('entry',document.querySelectorAll('.sbi')[1]);
+}
+
+async function delPlan(id){
+  if(!confirm('Delete this plan?'))return;
+  plans=plans.filter(p=>p.id!==id);
+  await persist();
+  renderRecs();buildDash();
+}
+
+function toast(msg,type){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;bottom:18px;right:18px;background:#2c3e50;color:#fff;padding:9px 14px;border-radius:7px;font-size:11px;z-index:99999;display:flex;align-items:center;gap:7px;box-shadow:0 4px 12px rgba(0,0,0,.18)';
+  d.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:${type==='w'?'#e67e22':'#27ae60'};display:inline-block"></span>${msg}`;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),2500);
+}
+
+// ════════════════════════════════════════════════════════════════
+// BENCHMARK DATA (from historical records)
+// ════════════════════════════════════════════════════════════════
+const BENCHMARK = {"S9J LOCK ADAPTOR(30019177)BLANKING": {"max": 1467.8, "benchmark": 1467.8, "avg": 1248.98, "count": 3}, "RR SEAT CUSHION(5297062)PROGRESSIVE(1)": {"max": 1060.3, "benchmark": 909.2, "avg": 549.1, "count": 69}, "YFG RR TOP MTG BRKT RH/LH(P2S40200/P2S30200)BLANKING(1)": {"max": 2864.7, "benchmark": 799.4, "avg": 593.11, "count": 43}, "BRKT RR SEAT RECLINING CONTROL LEVER(5296978)PROGRESSIVE(1)": {"max": 2023.7, "benchmark": 941.9, "avg": 578.75, "count": 36}, "X3 BCP(30025408)TRIMMING(5)": {"max": 2440, "benchmark": 342.6, "avg": 278.51, "count": 124}, "X3 BCP(30025408)PRE PIERCING(3)": {"max": 729.4, "benchmark": 514.3, "avg": 367.68, "count": 87}, "END COVER CE 2020(50009570)FORMING(4)": {"max": 312.8, "benchmark": 285.7, "avg": 217.44, "count": 31}, "X3 BCP(30025408)CENTER PUSH THROUGH(6)": {"max": 683.3, "benchmark": 432.9, "avg": 323.62, "count": 123}, "END COVER CE 2020(50009570)LANCING(5)": {"max": 1200, "benchmark": 330, "avg": 239.79, "count": 49}, "CAM BRKT(50019791/90)SECOND FORMING(3)": {"max": 996, "benchmark": 619.1, "avg": 433.02, "count": 47}, "PATCH PLATE RH/LH(30016226)PIERCING(3)": {"max": 595.6, "benchmark": 523.9, "avg": 360.65, "count": 47}, "SIDE MEMBER BRKT 3RD ROW(5296245 / 5296260)BLANKING(1)": {"max": 337.5, "benchmark": 294.6, "avg": 232.73, "count": 76}, "END COVER CE 2020(50009570)PIERCING(7)": {"max": 1169.3, "benchmark": 436.4, "avg": 326.22, "count": 54}, "X3 BCP(30025408)PUSH THROUGH(4)": {"max": 1666.7, "benchmark": 445.2, "avg": 311.15, "count": 118}, "CAM BRKT(50019791/90)1ST FORMING(2)": {"max": 1151.2, "benchmark": 708.4, "avg": 518.41, "count": 44}, "PATCH PLATE RH/LH(30016226)FORMING(2)": {"max": 1136, "benchmark": 510.6, "avg": 403.62, "count": 37}, "YFG RR TOP MTG BRKT RH/LH(P2S40200/P2S30200)1st FORMING & 2nd FORMING (2)": {"max": 900, "benchmark": 512.5, "avg": 373.01, "count": 66}, "PLATE HOLDER LH/RH(SN630500/SN640500)PIEARCING(4)": {"max": 1080, "benchmark": 411.9, "avg": 315.16, "count": 74}, "END COVER CE 2020(50009570)FIRST DRAW(2)": {"max": 558.3, "benchmark": 372.1, "avg": 248.78, "count": 44}, "BRKT SPRING SUPPORT(50017373)BLANKING(1)": {"max": 1972.5, "benchmark": 1972.5, "avg": 1290.16, "count": 10}, "BRKT SPRING SUPPORT(50017372)LANCING(4)": {"max": 500, "benchmark": 385.6, "avg": 275.53, "count": 47}, "YFG RR TOP MTG BRKT RH/LH(P2S40200/P2S30200)PIERCING(4)": {"max": 1111.1, "benchmark": 523.9, "avg": 410.58, "count": 70}, "END COVER CE 2020(50009570)BURR LABELLING(6)": {"max": 1040.8, "benchmark": 666.7, "avg": 360.69, "count": 40}, "END COVER CE 2020(50009570)CLOSING(8)": {"max": 616.7, "benchmark": 440, "avg": 307.06, "count": 38}, "LOCK GUIDE(30002806) 2nd CURLING(3)": {"max": 462.9, "benchmark": 377.1, "avg": 237.67, "count": 16}, "LOCK ADAPTOR- INR(30002066)RIBBING(2)": {"max": 600, "benchmark": 388.7, "avg": 306.52, "count": 21}, "MH(A)HT(BP05100500103-010)TRIMMING(7)": {"max": 204.9, "benchmark": 196, "avg": 130.73, "count": 18}, "MH(A)HT(BP05100500103-010)3 & 4 DRAW(5)": {"max": 176.2, "benchmark": 153.2, "avg": 114.37, "count": 20}, "MH(A)HT(BP05100500103-010)RIBBING(6)": {"max": 1010, "benchmark": 224, "avg": 182.5, "count": 21}, "UPPER ADAPTORRH/ LH (30001503/3001497)BLANKING(1)": {"max": 476.2, "benchmark": 407.6, "avg": 314.33, "count": 28}, "BRKT_FERROUS_FRONT_INBOARD_ LH(L0720130)PROGRESSIVE(01)": {"max": 1963.6, "benchmark": 1963.6, "avg": 1271.81, "count": 7}, "BRKT SPRING SUPPORT(50017373)LANCING(4)": {"max": 526.3, "benchmark": 400, "avg": 286.48, "count": 36}, "RECLINER BRACKET LOWER OB(5296268/5297000)BLANKING(1)": {"max": 1776, "benchmark": 993, "avg": 669.83, "count": 25}, "UPPER ADAPTOR RH/ LH (30001503/3001497)2nd PIERCING(6)": {"max": 366, "benchmark": 331.8, "avg": 236.15, "count": 12}, "BRKT SPRING SUPPORT(50017373)1st CURLING(2)": {"max": 650.7, "benchmark": 397.2, "avg": 341.01, "count": 26}, "MH(A)HT(BP05100500103-010)SETTING(8)": {"max": 356.2, "benchmark": 323.2, "avg": 237.94, "count": 17}, "UPPER ADAPTOR RH/ LH (30001503/3001497)1st PIERCING(5)": {"max": 911.1, "benchmark": 408, "avg": 263.87, "count": 56}, "MH(A)HT(BP05100500103-010)PIERCING(9)": {"max": 1104, "benchmark": 619.4, "avg": 292.31, "count": 18}, "S9J LOCK ADAPTOR(30019177)RIBBING(2)": {"max": 436, "benchmark": 375, "avg": 307.45, "count": 12}, "LOCK ADAPTOR- INR(30002066)FIRST CURLING(4)": {"max": 403.5, "benchmark": 380.4, "avg": 271.22, "count": 27}, "BRKT SPRING SUPPORT(50017373)2nd CURLING(3)": {"max": 476.9, "benchmark": 360.9, "avg": 298.04, "count": 29}, "UPPER ADAPTOR RH/ LH (30001503/3001497)2nd FORMING(3)": {"max": 500, "benchmark": 441.1, "avg": 332.9, "count": 20}, "UPPER ADAPTOR RH/LH  (30001503/3001497)1st FORMING(2)": {"max": 570, "benchmark": 471.4, "avg": 368.52, "count": 37}, "TOWEL BAR GUIDE BRKT (BLANKING-PROGRESSIVE)": {"max": 952.9, "benchmark": 952.9, "avg": 684.32, "count": 7}, "PLATE BASE LH (SN640400)FLATING(5)": {"max": 401.9, "benchmark": 357.7, "avg": 262.94, "count": 40}, "LOCK ADAPTOR- INR(30002066)SECOND CURLING(5)": {"max": 393.1, "benchmark": 308.1, "avg": 208.92, "count": 30}, "BRKT RR SEAT RECLINING CONTROL LEVER(5296978)BENDING(2)": {"max": 660, "benchmark": 414, "avg": 306.32, "count": 76}, "LOCK ADAPTOR- INR(30002066)LEG BENDING(3)": {"max": 480, "benchmark": 421.5, "avg": 265.86, "count": 28}, "UPPER RAIL(30017646) BLANKING": {"max": 1752.5, "benchmark": 1433.9, "avg": 969.85, "count": 23}, "UPPER ADAPTOR LH (30001503/3001497)1st PIERCING(5)": {"max": 265.5, "benchmark": 265.5, "avg": 265.53, "count": 1}, "UPPER ADAPTOR RH/ LH (30001503/3001497)NOTCHING(4)": {"max": 540, "benchmark": 414.8, "avg": 251.15, "count": 40}, "PLATE BASE LH (SN640400)REWORK": {"max": 317.1, "benchmark": 317.1, "avg": 217.29, "count": 9}, "S9J LOCK ADAPTOR(30019177)SECOND CURLING(5)": {"max": 421.2, "benchmark": 351.4, "avg": 180.96, "count": 21}, "S9J LOCK ADAPTOR(30019177)FIRST CURLING(4)": {"max": 430.4, "benchmark": 366.1, "avg": 240.25, "count": 14}, "S9J LOCK ADAPTOR(30019177)LEG BENDING(3)": {"max": 433.3, "benchmark": 400, "avg": 269.57, "count": 13}, "PLATE RR SEAT CUSH BRACKET(50017295/296)1st FORMING(2)": {"max": 524.4, "benchmark": 431.0, "avg": 317.96, "count": 23}, "S9J LOCK ADAPTOR(30019177)PIERCING(6)": {"max": 260, "benchmark": 246.2, "avg": 147.5, "count": 19}, "PLATE RR SEAT CUSH BRACKET(50017295/296)PIRECING(4)": {"max": 554.5, "benchmark": 353.2, "avg": 272.67, "count": 26}, "PLATE RR SEAT CUSH BRACKET(50017295/296)2nd FORMING(3)": {"max": 773.3, "benchmark": 406.1, "avg": 322.34, "count": 23}, "PLATE RR SEAT CUSH BRACKET(50017295/296)BLANKING(1)": {"max": 557, "benchmark": 528.1, "avg": 415.6, "count": 18}, "RR SEATCUSHION HINGE(5297032) SIDE COINING(2)": {"max": 578, "benchmark": 312.5, "avg": 218.02, "count": 30}, "RR SEATCUSHION HINGE(5297032) CENTER COINING(2)": {"max": 582.2, "benchmark": 390.6, "avg": 256.29, "count": 95}, "LOCK ADAPTOR- INR(30002066)PIERCING(6)": {"max": 836.7, "benchmark": 445.6, "avg": 275.05, "count": 28}, "END COVER CE 2020(50009570)BLANKING(1)": {"max": 1837.7, "benchmark": 1837.7, "avg": 1200.94, "count": 8}, "UPPER ADAPTOR RH(30001503/3001497)2nd FORMING(3)": {"max": 391.5, "benchmark": 391.5, "avg": 331.33, "count": 3}, "UPPER ADAPTOR RH (30001503/3001497)1st FORMING(2)": {"max": 395.7, "benchmark": 395.7, "avg": 352.14, "count": 2}, "UPPER RAIL(30017646) PRE PIERCING": {"max": 400, "benchmark": 348.9, "avg": 273.52, "count": 52}, "STOPPER BRKT(5296980)BENDING(3)": {"max": 1200, "benchmark": 983.3, "avg": 583.51, "count": 65}, "UPPER ADAPTOR RH (30001503/3001497)1st PIERCING(5)": {"max": 364, "benchmark": 364, "avg": 252.63, "count": 6}, "UPPER ADAPTOR RH(30001503/3001497)NOTCHING(4)": {"max": 388.6, "benchmark": 388.6, "avg": 308.91, "count": 4}, "UPPER ADAPTOR RH (30001503/3001497)BLANKING(1)": {"max": 434.9, "benchmark": 434.9, "avg": 348.75, "count": 4}, "P601 CUP-LEG PIERCING": {"max": 450, "benchmark": 450, "avg": 328.66, "count": 4}, "BRKT WIRING HARNESS CLAMP(5318769)BLANKING": {"max": 4000, "benchmark": 914.4, "avg": 687.38, "count": 19}, "BRKT WIRING HARNESS CLAMP(5318769)BENDING": {"max": 1150, "benchmark": 688.2, "avg": 424.54, "count": 35}, "CAM BRKT(50019791/90)PIEARCING(4)": {"max": 720, "benchmark": 533.9, "avg": 371.61, "count": 55}, "BRKT SPRING SUPPORT(50017372)BLANKING(1)": {"max": 1600, "benchmark": 1575, "avg": 1009.19, "count": 16}, "BASE PLATE RH/LH(30016225)PIERCING(3)": {"max": 1480, "benchmark": 700, "avg": 541.11, "count": 20}, "SUPPORT BRKT IB(5296261/5296996)FORMING(2)": {"max": 692.7, "benchmark": 557.8, "avg": 409.08, "count": 56}, "BASE PLATE RH/LH(30016225)FORMING(2)": {"max": 623.0, "benchmark": 546.1, "avg": 482.9, "count": 15}, "BASE PLATE RH/LH(30016225)BLANKING(1)": {"max": 2195.1, "benchmark": 2195.1, "avg": 1335.01, "count": 9}, "P601 CUP-CENTRE PUSHTHROUGH": {"max": 450, "benchmark": 426.7, "avg": 289.37, "count": 12}, "UPPER RAIL(30017646) 2nd FORMING": {"max": 510.6, "benchmark": 436.8, "avg": 322.33, "count": 52}, "BRKT SPRING SUPPORT(50017372)1st CURLING(2)": {"max": 428.6, "benchmark": 405, "avg": 335.92, "count": 33}, "UPPER PART LH/RH (30015001/30015002)NOTCHING(4)": {"max": 257.1, "benchmark": 257.1, "avg": 257.14, "count": 1}, "UPPER PART  LH/RH (30015001/30015002)1st PIERCING(5)": {"max": 484.8, "benchmark": 484.8, "avg": 344.12, "count": 10}, "UPPER RAIL(30017646) 1st FORMING": {"max": 517.8, "benchmark": 374, "avg": 293.05, "count": 49}, "RT64 NEW(30019423)BLANKING(1)": {"max": 360, "benchmark": 360, "avg": 283.58, "count": 6}, "P601 CUP-LEG PUSHTHROUGH": {"max": 311.3, "benchmark": 311.3, "avg": 178.32, "count": 9}, "BRKT SPRING SUPPORT(50017372)2nd CURLING(3)": {"max": 412.4, "benchmark": 311.6, "avg": 256.02, "count": 37}, "UPPER RAIL(30017646) PIERCING": {"max": 450, "benchmark": 272.7, "avg": 194.93, "count": 85}, "CAM BRKT(50019791/90)BLANKING(1)": {"max": 1378.4, "benchmark": 943.5, "avg": 733.28, "count": 26}, "UPPER RAIL(30017646) 3rd FORMING": {"max": 456.3, "benchmark": 354.0, "avg": 241.92, "count": 57}, "TOWEL BAR HINGE BRKT (30018975)PROGRESSIVE (01)": {"max": 2624, "benchmark": 2316, "avg": 1368.73, "count": 45}, "BRKT_FRUS_RR_OUTBOARD_LH(L0643620)BLANKING(1)": {"max": 1241.2, "benchmark": 1180.5, "avg": 593.56, "count": 12}, "UPPER RAIL(30017646) LANCING": {"max": 420.3, "benchmark": 274.6, "avg": 212.85, "count": 62}, "P601 CUP-TRIMMING": {"max": 432, "benchmark": 398.2, "avg": 244.68, "count": 11}, "UPPER RAIL(30017646) SIDE BENDING": {"max": 369.2, "benchmark": 263.8, "avg": 198.41, "count": 67}, "BRKT_FRUS_RR_OUTBOARD_LH(L0643620)PIERCING(5)": {"max": 500, "benchmark": 314.9, "avg": 252.16, "count": 18}, "BRKT_FRUS_RR_OUTBOARD_LH(L0643620)BENDING(4)": {"max": 438.2, "benchmark": 384.2, "avg": 281.91, "count": 22}, "RT64 NEW(30019423)FIRST PIERCING(5)": {"max": 538.5, "benchmark": 538.5, "avg": 252.85, "count": 8}, "RT64 NEW(30019423)SECOND PIERCING(6)": {"max": 505.3, "benchmark": 505.3, "avg": 236.23, "count": 8}, "RT64 NEW(30019423)SETTING(4)": {"max": 274.5, "benchmark": 274.5, "avg": 179.14, "count": 9}, "BRKT_FRUS_RR_OUTBOARD_LH(L0643620)FLANGING(3)": {"max": 665.8, "benchmark": 494.7, "avg": 340.5, "count": 14}, "P601 CUP-CONE PIRERCING": {"max": 354.6, "benchmark": 354.6, "avg": 211.06, "count": 4}, "P601 CUP-CONE DRAW": {"max": 393.3, "benchmark": 393.3, "avg": 227.32, "count": 8}, "BRKT_FRUS_RR_OUTBOARD_RH(L0643605)BLANKING(1)": {"max": 1023.3, "benchmark": 1023.3, "avg": 799.81, "count": 6}, "UPPER RAIL NEW (30017646) PIERCING": {"max": 211.8, "benchmark": 211.8, "avg": 211.76, "count": 1}, "RT64 NEW(30019423)FORMING(2)": {"max": 274, "benchmark": 274, "avg": 254.38, "count": 2}, "RT64 NEW(30019423)BENDING(3)": {"max": 279.1, "benchmark": 279.1, "avg": 163.3, "count": 6}, "BRKT_FRUS_RR_OUTBOARD_LH(L0643620)PRE FORMING(2)": {"max": 523.8, "benchmark": 438.2, "avg": 318.33, "count": 13}, "UPPER RAIL(30017646) DEBBURING": {"max": 333.1, "benchmark": 333.1, "avg": 333.12, "count": 1}, "BBM SHELL(REWORK)": {"max": 461.5, "benchmark": 461.5, "avg": 285.23, "count": 6}, "BRKT_FRUS_RR_OUTBOARD_RH(L0643605)BENDING(4)": {"max": 434.5, "benchmark": 432.2, "avg": 317.55, "count": 15}, "BBM SHELL-4 MM PIERCING(1)": {"max": 250, "benchmark": 202.0, "avg": 148.82, "count": 26}, "BRKT_FRUS_RR_OUTBOARD_RH(L0643605)PRE FORMING(2)": {"max": 334.9, "benchmark": 334.9, "avg": 258.02, "count": 8}, "UPPER RAIL(30017646) REWORK": {"max": 421.1, "benchmark": 303, "avg": 222.45, "count": 28}, "PLATE HOLDER LH/RH(SN630500/SN640500)BLANKING(1)": {"max": 1333.3, "benchmark": 997.5, "avg": 670.0, "count": 44}, "BRKT RR NO3 SEAT BACK RH INNER(5296527)FORMING(2)": {"max": 1206.9, "benchmark": 443.3, "avg": 327.78, "count": 29}, "BRKT_FRUS_RR_OUTBOARD_RH(L0643605)PIERCING(5)": {"max": 579, "benchmark": 400, "avg": 320.29, "count": 13}, "BRKT_FRUS_RR_OUTBOARD_RH(L0643605)FLANGING(3)": {"max": 434.5, "benchmark": 434.5, "avg": 302.17, "count": 10}, "BRKT RR NO3 SEAT BACK RH INNER(5296527)BLANKING(1)": {"max": 677.1, "benchmark": 630.5, "avg": 474.54, "count": 15}, "STOPPER BRKT(5296980)BLANKING(1)": {"max": 970, "benchmark": 600, "avg": 437.18, "count": 53}, "RR SEATCUSHION HINGE(5297032)PROGRESSIVE(1)": {"max": 1330.4, "benchmark": 1195.3, "avg": 695.46, "count": 42}, "BBM SHELLL-ASSEMBLY": {"max": 164, "benchmark": 81.8, "avg": 57.65, "count": 40}, "SCORPIO END COVER(50010446)OUTER DRAW(5)": {"max": 1733.3, "benchmark": 407.5, "avg": 357.65, "count": 11}, "SCORPIO END COVER(50010446)22 SETTING(8)": {"max": 519.5, "benchmark": 519.5, "avg": 263.59, "count": 10}, "BRKT RR NO3 SEAT BACK RH INNER(5296527)PIERCING(3)": {"max": 725, "benchmark": 447.5, "avg": 327.75, "count": 22}, "SCORPIO END COVER(50010446)SECOND DRAW(2)": {"max": 348.8, "benchmark": 348.8, "avg": 262.54, "count": 8}, "PLATE HOLDER LH/RH(SN630500/SN640500)EMBOSING(2)": {"max": 535, "benchmark": 361.3, "avg": 262.68, "count": 53}, "BRKT WIRING HARNESS CLAMP(5317492)BENDING(2)": {"max": 553.3, "benchmark": 553.3, "avg": 355.34, "count": 3}, "SCORPIO END COVER(50010446)FOURTH DRAW(4)": {"max": 980, "benchmark": 980, "avg": 320.65, "count": 10}, "SCORPIO END COVER(50010446)THIRD DRAW(3)": {"max": 325.7, "benchmark": 315, "avg": 255.74, "count": 11}, "SCORPIO END COVER(50010446)TRIMMING(7)": {"max": 1542.9, "benchmark": 362.5, "avg": 324.36, "count": 11}, "SCORPIO END COVER(50010446)OUTER SETTING(6)": {"max": 2705, "benchmark": 2705, "avg": 518.23, "count": 8}, "SCORPIO END COVER(50010446)LEG PIERCING(9)": {"max": 269.2, "benchmark": 269.2, "avg": 175.7, "count": 6}, "BRKT RR SEAT CUSHION SIDE RH(5297030)BENDING": {"max": 2020, "benchmark": 407.4, "avg": 328.28, "count": 78}, "SCORPIO END COVER(50010446)OD PIERCING(10)": {"max": 240, "benchmark": 220.2, "avg": 146.44, "count": 18}, "BRACKET_FERROUS_SUPPORTING_PLATE(L0643618)PROGRESSIVE(1)": {"max": 1900, "benchmark": 1202.3, "avg": 843.86, "count": 19}, "PLATE BASE LH (SN640400)RESTRIKEING(3)": {"max": 590, "benchmark": 389.5, "avg": 275.17, "count": 52}, "BRKT FERROUS STAMPED OB RR FRT MTG REINFORCEMENT(L002169391NCP)BLANKING(1)": {"max": 1349.0, "benchmark": 1349.0, "avg": 888.87, "count": 3}, "PLATE BASE LH (SN630400/SN640400)BLANKING(1)": {"max": 532.4, "benchmark": 416.0, "avg": 325.81, "count": 40}, "REINFORCEMENT PLATE (30002329)FORMING(2)": {"max": 494.1, "benchmark": 276.9, "avg": 160.2, "count": 36}, "BRKT FERROUS STAMPED OB RR FRT MTG REINFORCEMENT(L002169391NCP)1 ST BENDING": {"max": 790, "benchmark": 790, "avg": 440.42, "count": 5}, "BRKT FERROUS STAMPED OB RR FRT MTG REINFORCEMENT(L002169391NCP)2nd FORMONG(3)": {"max": 332.5, "benchmark": 332.5, "avg": 300.82, "count": 4}, "LOCK ADAPTOR- INR(30002066)BLANKING(1)": {"max": 1652.6, "benchmark": 1572, "avg": 736.02, "count": 17}, "PLATE BASE LH (SN640400)DIMPLING(4)": {"max": 1742, "benchmark": 354.6, "avg": 293.06, "count": 46}, "SIDE MEMBER BRKT 3RD ROW(5296245 / 5296260)1ST BENDING(4)": {"max": 733.3, "benchmark": 389.1, "avg": 294.97, "count": 68}, "PLATE BASE LH(SN630400/SN640400)PIERCING(3)": {"max": 966.5, "benchmark": 667.6, "avg": 463.47, "count": 67}, "SIDE MEMBER BRKT 3RD ROW(5296245 / 5296260)PIERCING(3)": {"max": 1694.4, "benchmark": 388.7, "avg": 319.24, "count": 60}, "SIDE MEMBER BRKT 3RD ROW(5296245 / 5296260)FORMING(2)": {"max": 425.7, "benchmark": 388.7, "avg": 292.82, "count": 56}, "PLATE BASE LH (SN630400/SN640400)FORMING(2)": {"max": 1590, "benchmark": 731.9, "avg": 555.41, "count": 51}, "SIDE MEMBER BRKT 3RD ROW(5296245 / 5296260)2nd BENDING(5)": {"max": 630, "benchmark": 411.1, "avg": 310.3, "count": 67}, "PLATE BASE LH (SN640400)FLATING (NAC)": {"max": 385.3, "benchmark": 385.3, "avg": 229.02, "count": 5}, "SUPPORT BRKT IB(5296261/5296996)BLANKING(1)": {"max": 2245.2, "benchmark": 1254.5, "avg": 923.69, "count": 32}, "PLATE BASE LH (SN640400)RESTRIKEING (NAC)": {"max": 316.4, "benchmark": 316.4, "avg": 231.36, "count": 4}, "PLATE BASE LH (SN640400)DIMPLING (NAC)": {"max": 480, "benchmark": 480, "avg": 326.26, "count": 4}, "SUPPORT BRKT IB(5296261/5296996)PIERCING(3)": {"max": 693.3, "benchmark": 480, "avg": 334.68, "count": 77}, "SUPPORT BRKT IB(5296261/5296996)COINING(4)": {"max": 1207.5, "benchmark": 500, "avg": 355.5, "count": 76}, "PLATE BASE LH(SN630400/SN640400)PIERCING(NAC)": {"max": 571.4, "benchmark": 571.4, "avg": 397.6, "count": 3}, "RECLINER BRACKET LOWER OB(5296268/5297000)PIERCING(3)": {"max": 716, "benchmark": 559.4, "avg": 364.02, "count": 36}, "RECLINER BRACKET LOWER OB(5296268/5297000)FORMING(2)": {"max": 1140, "benchmark": 962, "avg": 656.89, "count": 32}, "RECLINER BRACKET LOWER OB(5296268/5297000)DIMPLING(4)": {"max": 460, "benchmark": 402.9, "avg": 289.43, "count": 38}, "PLATE BASE RH (SN630400/SN640400)BLANKING(1)": {"max": 632.2, "benchmark": 469.7, "avg": 363.88, "count": 33}, "SIDE MEMBER BRKT 3RD ROW(5296245 / 5296260)DEBURRING": {"max": 457.1, "benchmark": 457.1, "avg": 311.51, "count": 4}, "BRKT RR SEAT CUSHION SIDE RH(5297030)BLANKING": {"max": 631.6, "benchmark": 516.8, "avg": 328.99, "count": 69}, "PLATE BASE RH (SN640400)RESTRIKEING(3)": {"max": 562.9, "benchmark": 373.2, "avg": 302.04, "count": 37}, "PLATE BASE RH (SN640400)DIMPLING(4)": {"max": 480, "benchmark": 442.6, "avg": 314.18, "count": 39}, "BRACKET RECLING CONTROL CABLE(50017287/288)BLANKING(1)": {"max": 752.5, "benchmark": 505.4, "avg": 362.2, "count": 34}, "LOWER RAIL(30022834) BLANKING(1)": {"max": 3037.5, "benchmark": 3037.5, "avg": 1070.66, "count": 5}, "PLATE BASE RH (SN630400/SN640400)FORMING(2)": {"max": 4228.6, "benchmark": 754.3, "avg": 654.2, "count": 39}, "PLATE BASE RH (SN630400/SN640400)PIERCING(3)": {"max": 1860, "benchmark": 720, "avg": 520.93, "count": 48}, "LOCK ADAPTOR -OTR(30002067)FIRST CURLING(4)": {"max": 427.1, "benchmark": 425, "avg": 256.22, "count": 12}, "LOCK ADAPTOR -OTR(30002067)SECOND CURLING(5)": {"max": 348.4, "benchmark": 315.1, "avg": 232.05, "count": 13}, "PLATE BASE LH/ RH (SN630400/SN640400)PIERCING(3)": {"max": 688, "benchmark": 688, "avg": 471.16, "count": 3}, "BRACKET RECLING CONTROL CABLE(50017287/288)1st FORMING(2)": {"max": 542.9, "benchmark": 494.3, "avg": 373.72, "count": 24}, "BRACKET RECLING CONTROL CABLE(50017287/288)2nd FORMING(3)": {"max": 560, "benchmark": 425.5, "avg": 322.51, "count": 31}, "PLATE BASE RH (SN640400)FLATING(5)": {"max": 465, "benchmark": 384.5, "avg": 282.67, "count": 43}, "PLATE RR SEAT CUSH BRACKET(50017293/294)BLANKING(1)": {"max": 708, "benchmark": 542.5, "avg": 385.51, "count": 16}, "PLATE RR SEAT CUSH BRACKET(50017293/294)1st FORMING(2)": {"max": 560, "benchmark": 407.1, "avg": 366.54, "count": 14}, "RECLINER ADAPTOR BRKT OB (5317775/5317776)  PIERCING (3)": {"max": 1167, "benchmark": 513.2, "avg": 391.09, "count": 14}, "LOWER RAIL (30022834) PRE-PIERCING": {"max": 400, "benchmark": 400, "avg": 277.27, "count": 10}, "RR SEATCUSHION HINGE(5297032) COINING(2)": {"max": 1344, "benchmark": 535, "avg": 339.25, "count": 22}, "RECLINER ADAPTOR BRKT OB (5317775/5317776)  BLANKING (1)": {"max": 570.3, "benchmark": 342.7, "avg": 262.79, "count": 17}, "RECLINER ADAPTOR BRKT OB (5317775/5317776)  FORMING (2)": {"max": 541.5, "benchmark": 512.4, "avg": 321.07, "count": 16}, "PLATE RR SEAT CUSH BRACKET(50017293/294)2nd FORMING(3)": {"max": 584.4, "benchmark": 417.6, "avg": 303.4, "count": 20}, "PLATE RR SEAT CUSH BRACKET(50017293/294)PIRECING(4)": {"max": 600, "benchmark": 421.3, "avg": 276.83, "count": 25}, "LOCK ADAPTOR -OTR(30002067)PIERCING(6)": {"max": 473.9, "benchmark": 369.2, "avg": 231.4, "count": 16}, "LOCK ADAPTOR -OTR(30002067)LEG BENDING(3)": {"max": 408, "benchmark": 408, "avg": 239.29, "count": 9}, "SPACER BRKT (50019795/94)FORMING(2)": {"max": 392.4, "benchmark": 392.4, "avg": 392.45, "count": 1}, "END COVER CE 2020(50009570)TRIMMING(3)": {"max": 485.1, "benchmark": 380.3, "avg": 298.55, "count": 28}, "BRKT_FRUS_SPACER_Z_MTG_BRKT(L0762005)PROGRESSIVE(1)": {"max": 2270.3, "benchmark": 2270.3, "avg": 1668.21, "count": 5}, "YFG FRT TOP MTG BRKT LH/RH(P2R30300/P2R40300)BLANKING(1)": {"max": 2865.8, "benchmark": 1975.4, "avg": 1301.86, "count": 26}, "BRKT FERROUS IB RH 2W DR FLOOR MTG SPSCER PLATE(L0720310)PROGRESSIVE(1)": {"max": 2666.7, "benchmark": 2666.7, "avg": 1163.13, "count": 7}, "YFG FRT TOP MTG BRKT LH/RH(P2R30300/P2R40300)1st FORMING(2)": {"max": 3263.4, "benchmark": 600, "avg": 521.23, "count": 53}, "YFG FRT TOP MTG BRKT LH/RH(P2R30300/P2R40300)2nd FORMING(3)": {"max": 1368, "benchmark": 663.2, "avg": 495.55, "count": 52}, "STOPPER BRKT(5296980)PIERCING(2)": {"max": 216.1, "benchmark": 216.1, "avg": 194.25, "count": 2}, "YFG FRT TOP MTG BRKT LH/RH(P2R30300/P2R40300)PIERCING(4)": {"max": 1325.5, "benchmark": 556.5, "avg": 435.62, "count": 62}, "LOWER RAIL(300228334)RESTRIKE": {"max": 203.4, "benchmark": 198.9, "avg": 145.33, "count": 20}, "LOWER RAIL(300228334)CRIMPING": {"max": 285, "benchmark": 189, "avg": 116.97, "count": 27}, "A ENTRY SHELL(50009780)SIDE CLOSING(16)": {"max": 187.8, "benchmark": 134.3, "avg": 99.24, "count": 22}, "RETAINER_ METAL_FLOOR_MOUNTING(L0726210)PROGRESSIVE(01)": {"max": 2555.3, "benchmark": 2555.3, "avg": 1046.36, "count": 5}, "SUPER ACE SHELL(50009928)ASSEMBLY(2)": {"max": 600, "benchmark": 135.5, "avg": 78.99, "count": 29}, "PLATE HOLDER LH(SN630500/SN640500)PIEARCING": {"max": 363, "benchmark": 267.1, "avg": 194.52, "count": 11}, "BRKT_FRS_RR_OUTBOARD_RH_2_WAY(L0720175)PROGRESSIVE(1)": {"max": 1390.9, "benchmark": 1390.9, "avg": 1351.01, "count": 2}, "PATCH PLATE RH/LH(30016226)BLANKING(1)": {"max": 1784.3, "benchmark": 1642, "avg": 1181.15, "count": 15}, "A ENTRY SHELL(50009780)BLANKING(1)": {"max": 808.5, "benchmark": 808.5, "avg": 730.06, "count": 3}, "LOWER RAIL(300228334)PIERCING": {"max": 261.4, "benchmark": 241.9, "avg": 167.67, "count": 16}, "LOWER RAIL(300228334)SECOND FORMING": {"max": 400, "benchmark": 229.8, "avg": 182.0, "count": 16}, "BASE PLATE SCX (STRIKER) (30025090/1 /1)CHAMFERING(4)": {"max": 301.1, "benchmark": 301.1, "avg": 247.8, "count": 5}, "BASE PLATE SCX (STRIKER) (30025090/1 /1)FORMING(2)": {"max": 301.1, "benchmark": 301.1, "avg": 251.56, "count": 5}, "LOWER RAIL(300228334)1ST FORMING": {"max": 600, "benchmark": 363.4, "avg": 245.91, "count": 14}, "BASE PLATE SCX (STRIKER) (30025090/1 /1)BLANKING(1)": {"max": 646.3, "benchmark": 646.3, "avg": 461.86, "count": 3}, "TOP PLATE SCX(30025091)BLANKING(1)": {"max": 1580, "benchmark": 1580, "avg": 1158.53, "count": 8}, "BASE PLATE SCX (STRIKER) (30025090/1 /1)PIERCING(3)": {"max": 562.5, "benchmark": 562.5, "avg": 302.23, "count": 4}, "A ENTRY SHELL(50009780)FIRST DRAW(2)": {"max": 264, "benchmark": 264, "avg": 218.69, "count": 7}, "A ENTRY SHELL(50009780)1 & 2 CONE(3)": {"max": 147.6, "benchmark": 147.6, "avg": 121.21, "count": 10}, "A ENTRY SHELL(50009780)TRIMMING(6)": {"max": 327.3, "benchmark": 230.7, "avg": 162.54, "count": 11}, "A ENTRY SHELL(50009780)THIRD DRAW(5)": {"max": 293.6, "benchmark": 240.7, "avg": 138.77, "count": 15}, "A ENTRY SHELL(50009780)CENTER HOLE PIERCING(7)": {"max": 454.1, "benchmark": 443.5, "avg": 193.1, "count": 12}, "A ENTRY SHELL(50009780)THROUGHING(8)": {"max": 210, "benchmark": 172.0, "avg": 133.8, "count": 12}, "LATCH MTG BRKT OTB(30022468)BLANKING(1)": {"max": 1371.4, "benchmark": 1371.4, "avg": 940.23, "count": 6}, "TOP PLATE SCX(30025091)FORMING(2)": {"max": 413.5, "benchmark": 380.3, "avg": 300.65, "count": 23}, "TOP PLATE SCX(30025091)V BENDING(3)": {"max": 600, "benchmark": 427.4, "avg": 318.3, "count": 17}, "PLATE HOLDER LH(SN630500/SN640500)PIEARCING(NAC)": {"max": 328.9, "benchmark": 328.9, "avg": 185.7, "count": 3}, "RECLINER BRACKET LOWER IB(5296285/5297010)FORMING(2)": {"max": 2154.4, "benchmark": 688.4, "avg": 473.91, "count": 25}, "TOP PLATE SCX(30025091)PIERCING(4)": {"max": 344.4, "benchmark": 314.5, "avg": 218.24, "count": 43}, "A ENTRY SHELL(50009780)EXTRA CONE(15)": {"max": 245.1, "benchmark": 245.1, "avg": 173.03, "count": 8}, "A ENTRY SHELL(50009780)SECOND DRAW(4)": {"max": 216.8, "benchmark": 216.8, "avg": 139.47, "count": 9}, "TOP PLATE SCX(30025091)PUSH THROUGH(5)": {"max": 414.8, "benchmark": 350.4, "avg": 248.56, "count": 33}, "LOWER RAIL(300228334)REWORK": {"max": 143.4, "benchmark": 143.4, "avg": 107.8, "count": 5}, "CONDENSER SHELL(50009456)SECOND DRAW(2)": {"max": 332.2, "benchmark": 302.9, "avg": 246.44, "count": 11}, "CONDENSER SHELL(50009456)OUTER SETTING(6)": {"max": 242.1, "benchmark": 242.1, "avg": 193.03, "count": 10}, "CONDENSER SHELL(50009456)OUTER DRAW(5)": {"max": 228.2, "benchmark": 220.5, "avg": 193.69, "count": 14}, "CONDENSER SHELL(50009456)TRIMMING(7)": {"max": 255.3, "benchmark": 252, "avg": 195.76, "count": 13}, "CONDENSER SHELL(50009456)CUT AND DRAW(1)": {"max": 419.2, "benchmark": 405.1, "avg": 258.53, "count": 11}, "CONDENSER SHELL(50009456)FOURTH DRAW(4)": {"max": 308, "benchmark": 275.2, "avg": 220.34, "count": 11}, "CONDENSER SHELL(50009456)THIRD DRAW(3)": {"max": 339.6, "benchmark": 300, "avg": 247.62, "count": 12}, "BRKT FERROUS STAMPED,OB RR FLR MTG(L002169390NCP)BLANKING(1)": {"max": 1191.3, "benchmark": 1191.3, "avg": 612.02, "count": 5}, "XH5 END COVER(30024664)1st FORMING(7)": {"max": 25.6, "benchmark": 25.6, "avg": 24.44, "count": 2}, "CONDENSER SHELL(50009456)22 SETTING(10)": {"max": 500.6, "benchmark": 480, "avg": 260.59, "count": 16}, "CONDENSER SHELL(50009456)LEG PIERCING(8)": {"max": 1350, "benchmark": 435, "avg": 342.35, "count": 14}, "RECLINER BRACKET LOWER IB(5296285/5297010)PIERCING(3)": {"max": 565.7, "benchmark": 408.5, "avg": 330.74, "count": 26}, "XBA BASE PLATE(30016250)BLANKING(1)": {"max": 1145, "benchmark": 1145, "avg": 769.7, "count": 3}, "XBB BASE PLATE(30019203)BLANKING(1)": {"max": 505.2, "benchmark": 505.2, "avg": 382.6, "count": 2}, "LATCH MTG BRKT OTB(30022468)1ST PIERCING(6)": {"max": 480.5, "benchmark": 300.9, "avg": 243.9, "count": 21}, "XH5 END COVER(30024664)REVERSE DRAW(5)": {"max": 64, "benchmark": 64, "avg": 59.43, "count": 2}, "XH5 END COVER(30024664)2ND DRAW(3)": {"max": 54.9, "benchmark": 54.9, "avg": 54.86, "count": 1}, "A ENTRY SHELL(50009780)SETTING(9)": {"max": 187.5, "benchmark": 177.5, "avg": 143.99, "count": 11}, "BRKT FERROUS STAMPED,OB RR FLR MTG(L002169390NCP)RESTRIKING(3)": {"max": 344.4, "benchmark": 344.4, "avg": 269.68, "count": 6}, "X3 BCP(30025408)CUT AND DRAW(1)": {"max": 863.6, "benchmark": 507.7, "avg": 328.38, "count": 86}, "LATCH MTG BRKT OTB(30022468)1st FORMING(3)": {"max": 409.1, "benchmark": 390, "avg": 271.44, "count": 12}, "BRKT FERROUS STAMPED,OB RR FLR MTG(L002169390NCP)1ST BENDING(2)": {"max": 356, "benchmark": 356, "avg": 279.01, "count": 5}, "BRKT FERROUS STAMPED,OB RR FLR MTG(L002169390NCP)PIERCING(4)": {"max": 545.5, "benchmark": 545.5, "avg": 334.98, "count": 7}, "LATCH MTG BRKT OTB(30022468)Notching(2)": {"max": 437, "benchmark": 427.5, "avg": 299.95, "count": 11}, "CONDENSER SHELL(50009456)PUSHTHROUGH(9)": {"max": 278.3, "benchmark": 278.3, "avg": 219.71, "count": 9}, "BRKT SPRING SUPPORT(50017372)DEBURRING": {"max": 240, "benchmark": 240, "avg": 240.0, "count": 1}, "XH5 END COVER(30024664)2nd FORMING(8)": {"max": 76.8, "benchmark": 76.8, "avg": 76.8, "count": 1}, "XBB BASE PLATE(30019203)FORMING(2)": {"max": 317.6, "benchmark": 317.6, "avg": 244.88, "count": 3}, "CONDENSER SHELL(50009456)CENTER PIERCING(11)": {"max": 420, "benchmark": 300.4, "avg": 228.06, "count": 11}, "Lower Rail Rein BRKT INR(30018963)BLANKING(1)": {"max": 3218.1, "benchmark": 1826.7, "avg": 1421.16, "count": 13}, "XBA BASE PLATE(30016250)FIRST PIERCING(4)": {"max": 226.0, "benchmark": 226.0, "avg": 203.55, "count": 5}, "XBB BASE PLATE(30019203)FIRST PIERCING(3)": {"max": 188.8, "benchmark": 188.8, "avg": 188.8, "count": 1}, "XBB BASE PLATE(30019203)SECOND PIERCING(4)": {"max": 600, "benchmark": 600, "avg": 344.89, "count": 3}, "Lower Rail Rein BRKT INR(30018963)PIERCING(4)": {"max": 456.8, "benchmark": 400, "avg": 263.92, "count": 54}, "Lower Rail Rein BRKT INR(30018963)V BENDING(3)": {"max": 503.1, "benchmark": 457.1, "avg": 324.51, "count": 39}, "BRKT_FRS_RETAINER_METAL_FLR_MTG_FR_IB(L0720185)PROGRESSIVE(1)": {"max": 2094.4, "benchmark": 2094.4, "avg": 818.18, "count": 5}, "Lower Rail Rein BRKT INR(30018963)FIRST BENDING(2)": {"max": 533.9, "benchmark": 450, "avg": 322.81, "count": 36}, "X3 BCP(30025408)SETTING(2)": {"max": 1125, "benchmark": 555.6, "avg": 397.76, "count": 74}, "LOWER RAIL(30022834) PRE-FORMING": {"max": 342.9, "benchmark": 329.1, "avg": 247.77, "count": 11}, "ALN BASE PLATE RH (10000015)CROPPING(1)": {"max": 207.8, "benchmark": 207.8, "avg": 206.91, "count": 2}, "ALN BASE PLATE RH (10000015)2 nd DRAW(3)": {"max": 502.3, "benchmark": 502.3, "avg": 294.35, "count": 6}, "ALN BASE PLATE RH (10000015)1 st DRAW(3)": {"max": 255, "benchmark": 255, "avg": 213.75, "count": 2}, "ALN BASE PLATE RH (10000015)4th DRAW(5)": {"max": 233.6, "benchmark": 233.6, "avg": 211.76, "count": 3}, "ALN BASE PLATE RH (10000015)TRIMMING": {"max": 235, "benchmark": 235, "avg": 161.56, "count": 2}, "ALN BASE PLATE RH (10000015)SETTING(6)": {"max": 216.5, "benchmark": 216.5, "avg": 149.33, "count": 4}, "P601 CUP-SETTING": {"max": 347.3, "benchmark": 347.3, "avg": 347.32, "count": 1}, "ALN BASE PLATE RH (10000015)3 rd  DRAW(4)": {"max": 172.5, "benchmark": 172.5, "avg": 172.5, "count": 1}, "ALN BASE PLATE LH (10000014)2 nd DRAW(3)": {"max": 280, "benchmark": 280, "avg": 280.0, "count": 1}, "P601 CUP-PRE PIERCING": {"max": 480, "benchmark": 480, "avg": 312.78, "count": 4}, "ALN BASE PLATE LH (10000014)1 st DRAW(2)": {"max": 280, "benchmark": 280, "avg": 198.13, "count": 3}, "ALN BASE PLATE LH (10000014)4th DRAW(5)": {"max": 119.7, "benchmark": 119.7, "avg": 119.67, "count": 1}, "ALN BASE PLATE LH (10000014)TRIMMING": {"max": 136.7, "benchmark": 136.7, "avg": 110.13, "count": 3}, "ALN BASE PLATE LH (10000014)FORMING(7)": {"max": 91.7, "benchmark": 91.7, "avg": 91.67, "count": 1}, "ALN BASE PLATE LH (10000014)SETTING(6)": {"max": 228, "benchmark": 228, "avg": 206.5, "count": 2}, "ALN BASE PLATE LH (10000014)3 rd  DRAW(4)": {"max": 200, "benchmark": 200, "avg": 185.23, "count": 4}, "ALN BASE PLATE RH (10000015)PUSHTHROUGH(11)": {"max": 200, "benchmark": 200, "avg": 137.28, "count": 7}, "ALN BASE PLATE RH (10000015)FIRST PIERCING(8)": {"max": 420, "benchmark": 420, "avg": 250.8, "count": 4}, "ALN BASE PLATE LH (10000014)PUSHTHROUGH(11)": {"max": 185.1, "benchmark": 185.1, "avg": 125.41, "count": 7}, "ALN BASE PLATE RH (10000015)BENDING(7)": {"max": 145.1, "benchmark": 145.1, "avg": 135.18, "count": 3}, "ALN BASE PLATE LH (10000015)BENDING(7)": {"max": 240, "benchmark": 240, "avg": 181.88, "count": 3}, "ALN BASE PLATE LH (10000014)FIRST PIERCING(8)": {"max": 222.3, "benchmark": 222.3, "avg": 193.5, "count": 4}, "ALN BASE PLATE RH (10000015)2nd PUSHTHROUGH(11)": {"max": 181, "benchmark": 181, "avg": 150.03, "count": 2}, "ALN BASE PLATE LH (10000014)2nd PUSHTHROUGH(11)": {"max": 216, "benchmark": 216, "avg": 166.51, "count": 4}, "ALN BASE PLATE RH/LH (10000015)DEBURRING": {"max": 144.7, "benchmark": 144.7, "avg": 144.68, "count": 1}, "ALN BASE PLATE LH (10000014)SECOND PIERCING(9)": {"max": 167.5, "benchmark": 167.5, "avg": 167.5, "count": 1}, "ALN BASE PLATE LH (10000014)CENTRE PUSHTHROUGH(10)": {"max": 335.5, "benchmark": 335.5, "avg": 313.71, "count": 2}, "ALN BASE PLATE RH (10000015)CENTER PUSHTHROUGH(9)": {"max": 212.6, "benchmark": 212.6, "avg": 162.09, "count": 3}, "BRKT WIRING HARNESS CLAMP(5318776)PROGRESSIVE(1)": {"max": 893.8, "benchmark": 893.8, "avg": 598.58, "count": 8}, "REINFORCEMENT PLATE (30002329)BLANKING(1)": {"max": 1620, "benchmark": 562.5, "avg": 505.37, "count": 12}, "REINFORCEMENT PLATE RBC S1U00100(30002051)BLANKING(1)": {"max": 587.5, "benchmark": 587.5, "avg": 452.01, "count": 4}, "YFG RR TOP MTG BRKT RH/LH(P2S40200/P2S30200)1st FORMING(2)": {"max": 425.4, "benchmark": 425.4, "avg": 370.84, "count": 3}, "WORLD TRUCK PRIMA LH/RH (30025172)REWORK": {"max": 422.7, "benchmark": 422.7, "avg": 422.67, "count": 1}, "LATCH MTG BRKT OTB(30022468)RESTRIKING(5)": {"max": 393.8, "benchmark": 300, "avg": 201.04, "count": 17}, "LATCH MTG BRKT OTB(30022468)2nd FORMING(4)": {"max": 418.2, "benchmark": 363.1, "avg": 214.44, "count": 18}, "REINFORCEMENT PLATE RBC S1U00100(30002051)FORMING(2)": {"max": 232.8, "benchmark": 232.8, "avg": 147.56, "count": 6}, "LATCH MTG BRKT OTB(30022468)2ND PIERCING(7)": {"max": 610, "benchmark": 450, "avg": 301.6, "count": 20}, "PLATE HOLDER RH(SN630500/SN640500)EMBOSING(2)": {"max": 267.7, "benchmark": 267.7, "avg": 267.69, "count": 1}, "XH5 END COVER(30024664)LANCING(9)": {"max": 13.7, "benchmark": 13.7, "avg": 13.71, "count": 1}, "BRKT WIRING HARNESS CLAMP(5317492)BLANKING(1)": {"max": 606.3, "benchmark": 606.3, "avg": 606.29, "count": 1}, "OUTER COVER(10000004)BLANKING(1)": {"max": 466.9, "benchmark": 442.5, "avg": 286.02, "count": 15}, "ALN BASE PLATE RH/LH (10000015)REWORK": {"max": 374.3, "benchmark": 374.3, "avg": 268.84, "count": 2}, "BRACKET - FERROUS INBOARD LH, BEARING BUSHING UPPER(L0642603)BLANKING(1)": {"max": 1050.7, "benchmark": 943.2, "avg": 608.6, "count": 11}, "MH(A)HT(BP05100500103-010)BLANKING(1)": {"max": 1164.8, "benchmark": 1164.8, "avg": 793.54, "count": 6}, "BRACKET - FERROUS INBOARD LH, BEARING BUSHING UPPER(L0642603)1st FORMING(2)": {"max": 600, "benchmark": 517.5, "avg": 380.58, "count": 11}, "OUTER COVER(10000004)SECOND BENDING(4)": {"max": 381.4, "benchmark": 375, "avg": 255.63, "count": 20}, "BRACKET - FERROUS INBOARD LH, BEARING BUSHING UPPER(L0642603)RESTRIKING(3)": {"max": 405, "benchmark": 390.7, "avg": 288.11, "count": 13}, "BRACKET - FERROUS INBOARD LH, BEARING BUSHING UPPER(L0642603)PARTING(4)": {"max": 782.6, "benchmark": 782.6, "avg": 579.5, "count": 9}, "OUTER COVER(10000004)FIRST BENDING(3)": {"max": 339.1, "benchmark": 331.9, "avg": 247.41, "count": 20}, "PLATE HOLDER RH(SN630500/SN640500)PIEARCING": {"max": 315.8, "benchmark": 315.8, "avg": 281.74, "count": 4}, "RR SEATCUSHION HINGE(5297032) REWORK": {"max": 694.3, "benchmark": 446.1, "avg": 315.22, "count": 40}, "PSA-LATAM-STRIKER BASE PLATE(L4C00100) FORMING(2)": {"max": 535.7, "benchmark": 435, "avg": 305.35, "count": 13}, "PSA-LATAM-STRIKER BASE PLATE(L4C00100) BLANKING(1)": {"max": 1300, "benchmark": 642.9, "avg": 467.5, "count": 12}, "PSA-LATAM-STRIKER BASE PLATE(L4C00100) PIERCING(3)": {"max": 387.6, "benchmark": 387.6, "avg": 311.74, "count": 9}, "RECLINER BRACKET LOWER IB(5296285/5297010)BLANKING(1)": {"max": 1449.2, "benchmark": 1165, "avg": 965.28, "count": 12}, "MH(A)HT(BP05100500103-010)SECOND DRAW(3)": {"max": 192, "benchmark": 155.7, "avg": 128.41, "count": 17}, "MH(A)HT(BP05100500103-010)FIRST DRAW(2)": {"max": 428.6, "benchmark": 152, "avg": 143.39, "count": 16}, "UPPER RAIL NEW (30017646) LANCING": {"max": 203.7, "benchmark": 203.7, "avg": 135.52, "count": 3}, "TOP PLATE SCX(30025091)REWORK": {"max": 644, "benchmark": 644, "avg": 362.0, "count": 2}, "UPPER ADAPTOR RH (30001503/3001497)2nd PIERCING(6)": {"max": 353.6, "benchmark": 353.6, "avg": 299.07, "count": 3}, "XH5 END COVER(30024664)PIERCING(10)": {"max": 41.2, "benchmark": 41.2, "avg": 41.25, "count": 1}, "XH5 END COVER(30024664)SLOT PIERCING(11)": {"max": 55, "benchmark": 55, "avg": 55.0, "count": 1}, "XH5 END COVER(30024664)BURBBLING": {"max": 240, "benchmark": 240, "avg": 240.0, "count": 1}, "LOCK ADAPTOR -OTR(30002067)BLANKING(1)": {"max": 915.5, "benchmark": 915.5, "avg": 793.88, "count": 3}, "SCORPIO END COVER(50010446)CUT AND DRAW(1)": {"max": 476.7, "benchmark": 476.7, "avg": 267.53, "count": 6}, "LOCK GUIDE(30002806) BLANKING(1)": {"max": 756, "benchmark": 584.4, "avg": 401.65, "count": 11}, "LOCK GUIDE(30002806) 1st CURLING(2)": {"max": 418.3, "benchmark": 418.3, "avg": 289.35, "count": 10}, "A ENTRY SHELL(50009780)2nd WINDOW CUTTING(17)": {"max": 357.1, "benchmark": 357.1, "avg": 280.55, "count": 6}, "A ENTRY SHELL(50009780)1st WINDOW CUTTING(17)": {"max": 286.5, "benchmark": 286.5, "avg": 227.12, "count": 7}, "A ENTRY SHELL(50009780)8 HOLE PIERCING(11)": {"max": 273.4, "benchmark": 273.4, "avg": 193.9, "count": 10}, "XBA BASE PLATE(30016250)FORMING(3)": {"max": 244.2, "benchmark": 244.2, "avg": 215.22, "count": 5}, "XBA BASE PLATE(30016250)SLOT PIERCING(2)": {"max": 376, "benchmark": 376, "avg": 278.98, "count": 4}, "A ENTRY SHELL(50009780)SLOT PIERCING(13)": {"max": 171.6, "benchmark": 140, "avg": 104.64, "count": 13}, "WORLD TRUCK PRIMA LH/RH (30025172)cropping (1)": {"max": 379.5, "benchmark": 379.5, "avg": 291.46, "count": 3}, "XBA BASE PLATE(30016250)SECOND PIERCING(5)": {"max": 293.3, "benchmark": 293.3, "avg": 252.69, "count": 4}, "A ENTRY SHELL(50009780)3 & 4 WINDOW CUTTING(14)": {"max": 197.7, "benchmark": 181.2, "avg": 103.36, "count": 17}, "A ENTRY SHELL(50009780)COOLING HOLE(12)": {"max": 375, "benchmark": 234, "avg": 145.27, "count": 15}, "WORLD TRUCK RH(30011416)FIRST DRAW(2)": {"max": 201.8, "benchmark": 201.8, "avg": 153.5, "count": 3}, "WORLD TRUCK RH(30011416)TRIMMING(10)": {"max": 136.4, "benchmark": 136.4, "avg": 128.18, "count": 2}, "WORLD TRUCK RH(30011416)FIRST SETTING(8)": {"max": 140.2, "benchmark": 140.2, "avg": 110.09, "count": 2}, "WORLD TRUCK RH(30011416)THIRD DRAW(4)": {"max": 208.8, "benchmark": 208.8, "avg": 164.99, "count": 3}, "WORLD TRUCK RH(30011416)FOURTH DRAW(5)": {"max": 298.3, "benchmark": 298.3, "avg": 194.72, "count": 3}, "SUPER ACE SHELL(50009928)REWORK": {"max": 149.7, "benchmark": 149.7, "avg": 115.1, "count": 3}, "WORLD TRUCK RH(30011416)2ND DRAW(3)": {"max": 190.9, "benchmark": 190.9, "avg": 159.3, "count": 2}, "WORLD TRUCK PRIMA RH (30025172)FIRST DRAW (2)": {"max": 273.3, "benchmark": 273.3, "avg": 273.27, "count": 1}, "WORLD TRUCK PRIMA LH/RH (30025172)TRIMMING (8)": {"max": 460, "benchmark": 460, "avg": 334.8, "count": 7}, "WORLD TRUCK PRIMA LH/RH (30025172)FIRST SETTING (6)": {"max": 477, "benchmark": 477, "avg": 398.18, "count": 4}, "WORLD TRUCK PRIMA LH/RH (30025172)THIRD DRAW (4)": {"max": 501.8, "benchmark": 501.8, "avg": 350.19, "count": 5}, "WORLD TRUCK PRIMA LH/RH (30025172)FOURTH DRAW (5)": {"max": 523.2, "benchmark": 523.2, "avg": 408.8, "count": 4}, "WORLD TRUCK PRIMA LH/RH (30025172)2ND DRAW (3)": {"max": 505.1, "benchmark": 505.1, "avg": 406.33, "count": 5}, "MH(A)HT(BP05100500103-010)DEBBURING": {"max": 117.8, "benchmark": 117.8, "avg": 85.4, "count": 3}, "WORLD TRUCK PRIMA LH (30025172)2nd PUSHTHROUGH (12)": {"max": 227.1, "benchmark": 227.1, "avg": 166.97, "count": 9}, "WORLD TRUCK PRIMA LH (30025172)CENTER PUSHTHIOUGH (14)": {"max": 260, "benchmark": 260, "avg": 155.23, "count": 8}, "WORLD TRUCK PRIMA LH (30025172)PIERCING (10)": {"max": 286.9, "benchmark": 238, "avg": 140.23, "count": 14}, "WORLD TRUCK PRIMA LH (30025172)1st PUSHTHROUGH (11)": {"max": 304.9, "benchmark": 304.9, "avg": 169.64, "count": 9}, "WORLD TRUCK PRIMA LH (30025172)FIRST DRAW (2)": {"max": 239.2, "benchmark": 239.2, "avg": 239.16, "count": 1}, "WORLD TRUCK PRIMA LH (30025172)TRIMMING (8)": {"max": 163.4, "benchmark": 163.4, "avg": 163.4, "count": 1}, "WORLD TRUCK PRIMA LH (30025172)BENDING (9)": {"max": 196.3, "benchmark": 196.3, "avg": 176.44, "count": 2}, "WORLD TRUCK PRIMA LH (30025172)FIRST SETTING (6)": {"max": 173.7, "benchmark": 173.7, "avg": 173.66, "count": 1}, "WORLD TRUCK PRIMA LH (30025172)THIRD DRAW (4)": {"max": 234.6, "benchmark": 234.6, "avg": 234.55, "count": 1}, "WORLD TRUCK PRIMA LH (30025172)FOURTH DRAW (5)": {"max": 246.7, "benchmark": 246.7, "avg": 190.46, "count": 2}, "WORLD TRUCK PRIMA LH (30025172)CENTER PIERCING (13)": {"max": 279.5, "benchmark": 279.5, "avg": 198.32, "count": 7}, "WORLD TRUCK PRIMA LH (30025172)2ND DRAW (3)": {"max": 276.5, "benchmark": 276.5, "avg": 257.98, "count": 2}, "WORLD TRUCK PRIMA RH (30025172)PIERCING (10)": {"max": 228.6, "benchmark": 228.6, "avg": 164.6, "count": 7}, "WORLD TRUCK PRIMA RH (30025172)2nd PUSHTHROUGH (12)": {"max": 235, "benchmark": 235, "avg": 134.77, "count": 9}, "WORLD TRUCK PRIMA RH (30025172)TRIMMING (8)": {"max": 148, "benchmark": 148, "avg": 148.0, "count": 1}, "WORLD TRUCK PRIMA RH (30025172)CENTER PUSH THROUGH (14)": {"max": 235, "benchmark": 235, "avg": 225.88, "count": 4}, "WORLD TRUCK PRIMA LH/RH (30025172)PIERCING (10)": {"max": 579.3, "benchmark": 579.3, "avg": 373.37, "count": 9}, "WORLD TRUCK PRIMA RH (30025172)1st PUSHTHROUGH (11)": {"max": 252.9, "benchmark": 252.9, "avg": 199.73, "count": 7}, "BRKT WIRING HARNESS CLAMP NO.1 (6210502)(50019711)BENDING": {"max": 275.4, "benchmark": 275.4, "avg": 273.44, "count": 2}, "UPPER RAIL NEW (30017646) 1st FORMING": {"max": 49.3, "benchmark": 49.3, "avg": 49.33, "count": 1}, "BRKT WIRING HARNESS CLAMP NO.1 (6210502)(50019711)BLANKING": {"max": 524.2, "benchmark": 524.2, "avg": 438.77, "count": 2}, "PLATE HOLDER LH(SN630500/SN640500)FORMING": {"max": 324, "benchmark": 324, "avg": 254.69, "count": 3}, "BRKT RR SEAT RECLINING CONTROL LEVER(5296978)DEBURRING": {"max": 347.4, "benchmark": 347.4, "avg": 347.37, "count": 1}, "SUPPORT BRKT IB RH (5296261/5296996)COINING(4)": {"max": 357.2, "benchmark": 357.2, "avg": 273.2, "count": 2}, "BRKT RR NO 1 SEAT CUSHION FRAME RR(5297031) PROGRESSIVE(1)": {"max": 384, "benchmark": 384, "avg": 384.0, "count": 1}, "RR SEAT CUSHION(5297062)REWORK": {"max": 1014.5, "benchmark": 465.6, "avg": 316.71, "count": 53}, "LEG FRT OTR RH (50016877) BLANKING (1)": {"max": 538.8, "benchmark": 538.8, "avg": 404.4, "count": 2}, "LEG FRT OTR RH (50016877) 1ST BENDING (3)": {"max": 188.3, "benchmark": 188.3, "avg": 188.31, "count": 1}, "LEG FRT OTR RH (50016877) PRE-PIERCING(2)": {"max": 283.7, "benchmark": 283.7, "avg": 197.09, "count": 2}, "LEG FRT OTR RH (50016877) 2ED BENDING (4)": {"max": 278.1, "benchmark": 278.1, "avg": 278.12, "count": 1}, "END COVER 2 PIECE(E4601600)TRIMMING(6)": {"max": 356.8, "benchmark": 356.8, "avg": 268.77, "count": 3}, "LEG FRT OTR RH (50016877) 1ST PIERCING (5)": {"max": 278.1, "benchmark": 278.1, "avg": 278.12, "count": 1}, "END COVER 2 PIECE(E4601600)LANCING(8)": {"max": 257.1, "benchmark": 257.1, "avg": 200.15, "count": 2}, "LEG FRT OTR RH (50016877) 2ED PIERCING (6)": {"max": 262.7, "benchmark": 262.7, "avg": 262.67, "count": 1}, "PLATE RECLINING ADJUSTER (5317792) PROGRESSIVE(1)": {"max": 1143.6, "benchmark": 1143.6, "avg": 774.83, "count": 5}, "SUPPORT BRKT IB LH (5296261/5296996)PIERCING(3)": {"max": 257.1, "benchmark": 257.1, "avg": 256.07, "count": 2}, "SUPPORT BRKT IB LH (5296261/5296996)COINING(4)": {"max": 376, "benchmark": 376, "avg": 286.89, "count": 3}, "A ENTRY SHELL(50009780)ID DEBURRING(18)": {"max": 45.6, "benchmark": 45.6, "avg": 39.47, "count": 2}, "RETENTION PLATE RH(SP02100132245-90)BLANKING(1)": {"max": 760.9, "benchmark": 760.9, "avg": 760.94, "count": 1}, "LEG FRT INR RH (RT64)(30018679)2nd FORMING(4)": {"max": 109.5, "benchmark": 109.5, "avg": 109.5, "count": 1}, "UPPER PART LH/RH (30015001/30015002)2nd FORMING(3)": {"max": 544.3, "benchmark": 544.3, "avg": 544.33, "count": 1}, "TOWEL BAR HINGE BRKT (30018975)FORMING(2)": {"max": 349.6, "benchmark": 349.6, "avg": 349.6, "count": 1}, "ALN BASE PLATE RH/LH (10000015)3 rd  DRAW(4)": {"max": 619.9, "benchmark": 619.9, "avg": 619.91, "count": 1}, "ALN BASE PLATE RH/LH (10000015)4th DRAW(5)": {"max": 510.6, "benchmark": 510.6, "avg": 510.64, "count": 1}, "ALN BASE PLATE RH/LH (10000015)BENDING(7)": {"max": 369.1, "benchmark": 369.1, "avg": 369.1, "count": 1}, "ALN BASE PLATE RH/LH (10000015)TRIMMING": {"max": 331.6, "benchmark": 331.6, "avg": 309.48, "count": 2}, "ALN BASE PLATE RH /LH(10000015)CROPPING(1)": {"max": 506.3, "benchmark": 506.3, "avg": 506.29, "count": 1}, "XBB MAIN ARAM (PIERCING)(3)": {"max": 488.6, "benchmark": 488.6, "avg": 282.06, "count": 9}, "XBB MAIN ARAM (FORMING)(2)": {"max": 342.2, "benchmark": 342.2, "avg": 213.4, "count": 9}, "ALN BASE PLATE RH/LH (10000015)PUSHTHROUGH(11)": {"max": 243.9, "benchmark": 243.9, "avg": 243.89, "count": 1}, "XBB MAIN ARAM (BLANKING)(1)": {"max": 379.1, "benchmark": 379.1, "avg": 297.91, "count": 6}, "END COVER 2 PIECE(E4601600)REVERSE DRAW(5)": {"max": 397.2, "benchmark": 397.2, "avg": 397.24, "count": 1}, "END COVER 2 PIECE(E4601600)SECOND DRAW(3)": {"max": 403.4, "benchmark": 403.4, "avg": 400.35, "count": 2}, "END COVER 2 PIECE(E4601600)THIRD DRAW(4)": {"max": 397.2, "benchmark": 397.2, "avg": 397.24, "count": 1}, "END COVER 2 PIECE(E4601600)FORMING(7)": {"max": 273.5, "benchmark": 273.5, "avg": 273.52, "count": 1}, "SUPPORT BRKT IB RH (5296261/5296996)PIERCING(3)": {"max": 223.6, "benchmark": 223.6, "avg": 223.64, "count": 1}, "CLOCK SPRING SUPPORT BRACKET(50017316)1st FORMING(2)": {"max": 153.2, "benchmark": 153.2, "avg": 153.19, "count": 1}, "END COVER 2 PIECE(E4601600)BURR LABELLING(9)": {"max": 293.5, "benchmark": 293.5, "avg": 293.54, "count": 1}, "END COVER 2 PIECE(E4601600)LANCING CLOSING(10)": {"max": 428.2, "benchmark": 428.2, "avg": 376.09, "count": 2}, "WORLD TRUCK PRIMA LH (30025172)cropping (1)": {"max": 258.6, "benchmark": 258.6, "avg": 258.56, "count": 1}, "WORLD TRUCK PRIMA LH/RH (30025172)FIRST DRAW (2)": {"max": 424.7, "benchmark": 424.7, "avg": 366.89, "count": 6}, "WORLD TRUCK PRIMA LH/RH (30025172)BENDING (9)": {"max": 384, "benchmark": 384, "avg": 314.18, "count": 8}, "WORLD TRUCK PRIMA RH (30025172)CENTER PIERCING (13)": {"max": 168.8, "benchmark": 168.8, "avg": 139.42, "count": 3}, "WORLD TRUCK PRIMA LH/RH (30025172)CENTER PUSH THROUGH (11)": {"max": 840, "benchmark": 840, "avg": 490.35, "count": 4}, "PLATE BASE RH/LH (SN640400)DIMPLING(4)": {"max": 771.4, "benchmark": 771.4, "avg": 597.39, "count": 3}, "UPPER RAIL NEW (30017646) SIDE BENDING": {"max": 30.3, "benchmark": 30.3, "avg": 30.33, "count": 1}, "PLATE BASE RH/LH (SN640400)RESTRIKEING(3)": {"max": 720, "benchmark": 720, "avg": 487.74, "count": 5}, "FRONT FLOOR MTG BRKT SN700400 (BLANKING)(1) UPP FRONT": {"max": 448.1, "benchmark": 448.1, "avg": 318.72, "count": 4}, "SUPER ACE SHELL(50009928)4 MM PIERCING(1)": {"max": 380, "benchmark": 380, "avg": 180.1, "count": 9}, "FRONT FLOOR MTG BRKT SN700400 (PIEARCING)(3)": {"max": 261.5, "benchmark": 261.5, "avg": 238.98, "count": 4}, "FRONT FLOOR MTG BRKT SN700400 (FORMING)(2)": {"max": 435, "benchmark": 435, "avg": 208.44, "count": 7}, "DAIMLAR BASE PLATE RH/ LH(30010782)BENDING(8)": {"max": 254.5, "benchmark": 254.5, "avg": 172.41, "count": 3}, "DAIMLAR BASE PLATE RH/LH(30010782)cropping(1)": {"max": 182, "benchmark": 182, "avg": 154.0, "count": 2}, "DAIMLAR BASE PLATE LH(30010782)2ND DRAW(3)": {"max": 240, "benchmark": 240, "avg": 164.81, "count": 3}, "DAIMLAR BASE PLATE RH/ LH(30010782)FIRST DRAW(2)": {"max": 506.7, "benchmark": 506.7, "avg": 245.16, "count": 3}, "DAIMLAR BASE PLATE RH(30010782)FIRST DRAW()": {"max": 178.7, "benchmark": 178.7, "avg": 178.67, "count": 1}, "DAIMLAR BASE PLATE LH(30010782)THIRD DRAW(4)": {"max": 410.3, "benchmark": 410.3, "avg": 270.5, "count": 2}, "DAIMLAR BASE PLATE RH/ LH(30010782)TRIMMING(7)": {"max": 299.5, "benchmark": 299.5, "avg": 299.52, "count": 1}, "DAIMLAR BASE PLATE LH/RH(30010782)SETTING(5)": {"max": 302.1, "benchmark": 302.1, "avg": 302.11, "count": 1}, "REAR FLOOR MTG BRKT SN700500 (BLANKING)(1) UPP RR": {"max": 771, "benchmark": 771, "avg": 416.11, "count": 5}, "DAIMLAR BASE PLATERH/ LH(30010782)PIERCING(6)": {"max": 283.1, "benchmark": 283.1, "avg": 283.11, "count": 1}, "REINFORCEMENT PLATE (S6W02400-30019129)BENDING(3)": {"max": 230.8, "benchmark": 230.8, "avg": 177.73, "count": 2}, "DAIMLAR BASE PLATE RH(30010782)BENDING(8)": {"max": 81.9, "benchmark": 81.9, "avg": 81.9, "count": 1}, "REAR FLOOR MTG BRKT SN700500 (1ST FORMING)(2)": {"max": 357.6, "benchmark": 357.6, "avg": 273.4, "count": 5}, "REAR FLOOR MTG BRKT  SN700500(PIEARCING)(4)": {"max": 360, "benchmark": 360, "avg": 300.26, "count": 7}, "SPRING HOLDER BRACKET OB(5317778)REWORK": {"max": 575, "benchmark": 575, "avg": 575.0, "count": 1}, "SPRING HOLDER BRACKET OB(5317778)BENDING(2)": {"max": 404, "benchmark": 404, "avg": 404.0, "count": 1}, "RR LINK BRKT(S6W02600) BLANKING": {"max": 831.4, "benchmark": 831.4, "avg": 634.78, "count": 3}, "RR LINK BRKT(S6W02600)EMBOSSING": {"max": 141.2, "benchmark": 141.2, "avg": 129.52, "count": 2}, "UPPER PART LH (30015001/30015002)2nd FORMING(3)": {"max": 730.9, "benchmark": 730.9, "avg": 639.02, "count": 2}, "UPPER PART  LH (30015001/30015002)1st PIERCING(5)": {"max": 621.5, "benchmark": 621.5, "avg": 469.14, "count": 6}, "UPPER PART LH (30015001/30015002)NOTCHING(4)": {"max": 529.8, "benchmark": 529.8, "avg": 466.1, "count": 3}, "X3 BCP(30025408)REWORK": {"max": 329.9, "benchmark": 329.9, "avg": 248.12, "count": 2}, "MH(A)LT(BP05100050001103)OD REWORK(9)": {"max": 100, "benchmark": 100, "avg": 84.28, "count": 2}, "LOWER RAIL(300228334)DEBURRING": {"max": 400, "benchmark": 400, "avg": 400.0, "count": 1}, "WORLD TRUCK RH(30011416)cropping(1)": {"max": 212.4, "benchmark": 212.4, "avg": 198.36, "count": 3}, "BRACKET - FERROUS INBOARD LH, BEARING BUSHING UPPER(L0642603)REWORK": {"max": 273.6, "benchmark": 273.6, "avg": 273.6, "count": 1}, "WORLD TRUCK RH(30011416)2nd CONE(7)": {"max": 140.2, "benchmark": 140.2, "avg": 140.18, "count": 1}, "WORLD TRUCK PRIMA LH/RH (30025172)SECOND SETTING (7)": {"max": 391.5, "benchmark": 391.5, "avg": 391.47, "count": 1}, "WORLD TRUCK RH(30011416)BENDING(11)": {"max": 198.4, "benchmark": 198.4, "avg": 198.4, "count": 1}, "WORLD TRUCK RH(30011416)PIERCING(12)": {"max": 258, "benchmark": 258, "avg": 167.71, "count": 3}, "WORLD TRUCK PRIMA RH (30025172)BENDING (9)": {"max": 191.2, "benchmark": 191.2, "avg": 191.22, "count": 1}, "MH HT 3 LEG (30002928) RIBBING": {"max": 136.4, "benchmark": 136.4, "avg": 136.36, "count": 1}, "WORLD TRUCK LH(30011416)PIERCING": {"max": 168.7, "benchmark": 168.7, "avg": 138.68, "count": 2}, "MHLT 3 MTG(W2100500)PIERCING(9)": {"max": 90.2, "benchmark": 90.2, "avg": 90.2, "count": 1}, "WORLD TRUCK RH(30011416)2nd PUSHTHROUGH(14)": {"max": 182.1, "benchmark": 182.1, "avg": 182.07, "count": 1}, "WORLD TRUCK RH(30011416)1st PUSHTHROUGH(13)": {"max": 138.7, "benchmark": 138.7, "avg": 138.67, "count": 1}, "WORLD TRUCK LH(30011416)1st PUSHTHROUGH(13)": {"max": 147, "benchmark": 147, "avg": 147.0, "count": 1}, "WORLD TRUCK LH(30011416)2nd PUSHTHROUGH(14)": {"max": 242, "benchmark": 242, "avg": 242.0, "count": 1}, "UPPER PART LH (30015001/30015002)IST FORMING(2)": {"max": 515.4, "benchmark": 515.4, "avg": 515.38, "count": 2}, "UPPER PART LH/RH (30015001/30015002)IST FORMING(2)": {"max": 754.3, "benchmark": 754.3, "avg": 754.29, "count": 1}, "UPPER PART LH (300015001/30015002)2nd PIERCING(6)": {"max": 235.2, "benchmark": 235.2, "avg": 235.2, "count": 1}, "UPPER PART RH (30015001/30015002)2nd FORMING(3)": {"max": 342.9, "benchmark": 342.9, "avg": 342.86, "count": 1}, "LEG FRT OTR RH/LH (50016877) 1ST PIERCING (5)": {"max": 457.5, "benchmark": 457.5, "avg": 425.41, "count": 2}, "LEG FRT OTR RH /LH(50016877) 2ED BENDING (4)": {"max": 329.4, "benchmark": 329.4, "avg": 329.45, "count": 1}, "BRACKET RECLING CONTROL CABLE RH (50017287/288)2nd FORMING(3)": {"max": 240, "benchmark": 240, "avg": 183.07, "count": 3}, "BRACKET RECLING CONTROL CABLE RH (50017287/288)1st FORMING(2)": {"max": 363.6, "benchmark": 363.6, "avg": 260.83, "count": 2}, "PLATE BASE RH /LH(SN640400)FLATING(5)": {"max": 463.2, "benchmark": 463.2, "avg": 463.16, "count": 1}, "BRAKE ADJUSTER ASSEMBLY LH/RH (G4110030) BENDING (2)": {"max": 722.7, "benchmark": 722.7, "avg": 658.38, "count": 3}, "SUPER ACE SHELL(50009928)DEBURRING": {"max": 51.4, "benchmark": 51.4, "avg": 51.43, "count": 1}};
+
+
+// ════════════════════════════════════════════════════════════════
+// GOOGLE SHEETS — PERMANENT STORAGE
+// ════════════════════════════════════════════════════════════════
+var GS_URL='', GS_SHEET='ProdMIS';
+
+async function gsJsonp(action){
+  return new Promise(function(resolve,reject){
+    var cbName='_cb_'+Date.now();
+    var url=GS_URL+'?action='+encodeURIComponent(action)+'&sheet='+encodeURIComponent(GS_SHEET)+'&callback='+cbName;
+    var el=document.createElement('script');
+    var timer=setTimeout(function(){cleanup();reject(new Error('Timeout — check URL and re-deploy as Anyone'));},15000);
+    window[cbName]=function(data){cleanup();resolve(data);};
+    function cleanup(){clearTimeout(timer);delete window[cbName];if(el.parentNode)el.parentNode.removeChild(el);}
+    el.onerror=function(){cleanup();reject(new Error('Network error — check Apps Script URL'));};
+    el.src=url; document.head.appendChild(el);
+  });
+}
+
+async function gsPost(data){
+  return new Promise(function(resolve,reject){
+    var fname='_fr_'+Date.now();
+    var iframe=document.createElement('iframe');
+    iframe.name=fname; iframe.style.display='none'; document.body.appendChild(iframe);
+    var form=document.createElement('form');
+    form.method='POST'; form.action=GS_URL; form.target=fname; form.style.display='none';
+    var fi=function(n,v){var i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;form.appendChild(i);};
+    fi('action','save'); fi('sheet',GS_SHEET); fi('data',JSON.stringify(data));
+    document.body.appendChild(form);
+    var done=false;
+    var timer=setTimeout(function(){if(!done){done=true;cleanup();resolve({status:'ok'});}},8000);
+    function cleanup(){clearTimeout(timer);if(form.parentNode)form.parentNode.removeChild(form);setTimeout(function(){if(iframe.parentNode)iframe.parentNode.removeChild(iframe);},1000);}
+    iframe.onload=function(){if(!done){done=true;cleanup();resolve({status:'ok'});}};
+    form.submit();
+  });
+}
+
+async function gsLoad(){
+  var r=await gsJsonp('load');
+  if(r.status!=='ok') throw new Error(r.msg||'Load failed');
+  return r.plans||[];
+}
+
+async function gsSave(){
+  await gsPost(plans);
+}
+
+async function loadLocal(){
+  try{
+    var r=await window.storage.get('prodmis_v2');
+    if(!r) r=await window.storage.get('prodmis_v1');
+    if(!r) r=await window.storage.get('akme_v4');
+    if(r) plans=JSON.parse(r.value);
+  }catch(e){plans=[];}
+}
+
+async function persistLocal(){
+  try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
+}
+
+async function persist(){
+  await persistLocal();
+  if(GS_URL) gsSave().catch(function(){});
+}
+
+// ── Settings UI ──────────────────────────────────────────────────────────
+async function initSettings(){
+  try{
+    var u=await window.storage.get('prodmis_gs_url');
+    var s=await window.storage.get('prodmis_gs_sheet');
+    if(u&&u.value){document.getElementById('gs-url').value=u.value;GS_URL=u.value;}
+    if(s&&s.value){document.getElementById('gs-sheet').value=s.value;GS_SHEET=s.value;}
+  }catch(e){}
+  updateBadge();
+  document.getElementById('apps-script-code').textContent=APPS_SCRIPT_CODE;
+}
+
+async function saveSettings(){
+  GS_URL=document.getElementById('gs-url').value.trim();
+  GS_SHEET=document.getElementById('gs-sheet').value.trim()||'ProdMIS';
+  try{
+    await window.storage.set('prodmis_gs_url',GS_URL);
+    await window.storage.set('prodmis_gs_sheet',GS_SHEET);
+    toast('Settings saved');updateBadge();
+    if(GS_URL) testConnection();
+  }catch(e){toast('Save failed','w');}
+}
+
+function updateBadge(){
+  var b=document.getElementById('gs-badge');
+  if(!b)return;
+  b.textContent=GS_URL?'🟢 Sheets Connected':'🔴 Not Connected';
+  b.style.color=GS_URL?'#27ae60':'#c0392b';
+}
+
+async function testConnection(){
+  var el=document.getElementById('gs-conn-status');
+  if(!GS_URL){el.textContent='❌ No URL — paste your Web App URL above and click Save Settings';el.style.color='#c0392b';return;}
+  el.textContent='⏳ Testing connection…'; el.style.color='#e67e22';
+  try{
+    var r=await gsJsonp('ping');
+    if(r.status==='ok'){
+      el.textContent='✅ Connected to Sheets — tab: '+r.sheet+' — ready to save!';
+      el.style.color='#27ae60';
+      updateBadge();
+      toast('Connected ✓');
+    } else {
+      el.textContent='❌ Script error: '+(r.msg||'Unknown');
+      el.style.color='#c0392b';
+    }
+  }catch(e){
+    var hint='';
+    if(e.message.indexOf('Timeout')>=0) hint=' → Make sure you deployed as "Anyone" and created a NEW VERSION after authorising.';
+    else if(e.message.indexOf('Network')>=0) hint=' → Check the URL is correct.';
+    el.textContent='❌ '+e.message+hint;
+    el.style.color='#c0392b';
+    toast('Connection failed — see status below','w');
+  }
+}
+
+async function pushAllToSheets(){
+  if(!GS_URL){toast('Set URL in Settings first','w');return;}
+  var el=document.getElementById('gs-conn-status');
+  el.textContent='⏳ Pushing…'; el.style.color='#e67e22';
+  try{
+    await gsSave();
+    el.textContent='✅ Pushed '+plans.length+' plans — '+new Date().toLocaleTimeString('en-IN');
+    el.style.color='#27ae60'; toast('Pushed to Sheets ✓');
+  }catch(e){el.textContent='❌ '+e.message;el.style.color='#c0392b';toast('Push failed','w');}
+}
+
+async function pullFromSheets(){
+  if(!GS_URL){toast('Set URL in Settings first','w');return;}
+  var el=document.getElementById('gs-conn-status');
+  el.textContent='⏳ Loading from Sheets…'; el.style.color='#e67e22';
+  try{
+    plans=await gsLoad();
+    await persistLocal();
+    buildDash();
+    el.textContent='✅ Loaded '+plans.length+' plans'; el.style.color='#27ae60';
+    toast('Loaded from Sheets ✓');
+  }catch(e){el.textContent='❌ '+e.message;el.style.color='#c0392b';toast('Pull failed','w');}
+}
+
+// ── Export CSV ────────────────────────────────────────────────────────────
+function exportExcel(){exportCSV('all');}
+function exportCSV(mode){
+  var fil=[...plans].sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  var today=new Date().toISOString().slice(0,10);
+  if(mode==='today') fil=fil.filter(function(p){return p.date===today;});
+  else if(mode==='month') fil=fil.filter(function(p){return p.date.startsWith(today.slice(0,7));});
+  var rows=fil.flatMap(function(p){return p.rows.map(function(r){return{
+    Date:p.date,Shift:p.shift,Sl:r.sl||'',PartName:r.part_name||'',PartCode:r.part_code||'',
+    Operation:r.operation||'',Machine:r.machine||'',Planned:r.planned||0,
+    Produced:r.produced||0,Rejected:r.rejected||0,
+    Efficiency:r.planned>0?Math.round(r.produced/r.planned*100)+'%':'—',
+    Remarks:r.remarks||''
+  };});});
+  if(!rows.length){toast('No data','w');return;}
+  var hdrs=Object.keys(rows[0]);
+  var esc=function(v){var s=String(v==null?'':v);return(s.indexOf(',')>=0||s.indexOf('"')>=0)?'"'+s.replace(/"/g,'""')+'"':s;};
+  var csv='\ufeff'+hdrs.join(',')+'\r\n'+rows.map(function(r){return hdrs.map(function(h){return esc(r[h]);}).join(',');}).join('\r\n');
+  var fname='ProdMIS_'+today+'.csv';
+  try{
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');a.href=url;a.download=fname;a.style.display='none';
+    document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove();},300);
+  }catch(err){
+    var a2=document.createElement('a');a2.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+    a2.download=fname;document.body.appendChild(a2);a2.click();a2.remove();
+  }
+  toast('Exported '+rows.length+' rows');
+}
+
+// ── Loading overlay ────────────────────────────────────────────────────────
+function showLoader(msg){
+  var d=document.getElementById('gs-loader');
+  if(!d){d=document.createElement('div');d.id='gs-loader';
+    d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99998;display:flex;align-items:center;justify-content:center';
+    d.innerHTML='<div style="background:#fff;padding:22px 32px;border-radius:10px;text-align:center;font-size:13px;color:#333;box-shadow:0 8px 30px rgba(0,0,0,.2)"><div style="font-size:22px;margin-bottom:8px">⏳</div><div id="gs-loader-msg">Loading…</div></div>';
+    document.body.appendChild(d);}
+  document.getElementById('gs-loader-msg').textContent=msg||'Loading…';
+  d.style.display='flex';
+}
+function hideLoader(){var d=document.getElementById('gs-loader');if(d)d.style.display='none';}
+
+// ── Pcs/Hr + Hrs Required ─────────────────────────────────────────────────
+function getBenchmarkPph(partName,operation){
+  if(!getBenchmarkPph._map){
+    var map={};
+    for(var k in BENCHMARK){
+      var fp=k.indexOf('(');if(fp<0)continue;
+      var pname=k.slice(0,fp).trim().toUpperCase();
+      var afterCode=k.slice(k.indexOf(')',fp)+1).trim();
+      var op=afterCode.replace(/\s*\(\d+\)\s*$/,'').trim().toUpperCase();
+      var key=pname+'||'+op;
+      if(!(key in map))map[key]=BENCHMARK[k].benchmark;
+    }
+    getBenchmarkPph._map=map;
+  }
+  return getBenchmarkPph._map[(partName+'').trim().toUpperCase()+'||'+(operation+'').trim().toUpperCase()]||null;
+}
+
+function updatePphCells(tr){
+  var pn=tr.querySelector('.pni').value.trim();
+  var op=tr.querySelector('.opi').value.trim();
+  var pl=parseInt(tr.querySelector('.pli').value)||0;
+  var pph=getBenchmarkPph(pn,op);
+  var pc=tr.querySelector('.pph-cell');
+  var hc=tr.querySelector('.hrs-cell');
+  if(pph&&pph>0){
+    pc.textContent=Math.round(pph).toLocaleString('en-IN');pc.style.color='#0c4a6e';pc.style.fontWeight='600';
+    if(pl>0){var h=pl/pph;var hh=Math.floor(h);var mm=Math.round((h-hh)*60);hc.textContent=hh+'h '+mm+'m';hc.style.color='#0c4a6e';hc.style.fontWeight='600';}
+    else{hc.textContent='—';hc.style.color='#bbb';hc.style.fontWeight='normal';}
+  }else{
+    pc.textContent='—';pc.style.color='#ccc';pc.style.fontWeight='normal';
+    hc.textContent='—';hc.style.color='#ccc';hc.style.fontWeight='normal';
+  }
+}
+
+// ── Apps Script code constant ──────────────────────────────────────────────
+var APPS_SCRIPT_CODE = 'function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\nfunction handleRequest(e){\n  var lock=LockService.getScriptLock();\n  lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var sheetName=(e.parameter&&e.parameter.sheet)?e.parameter.sheet:\'ProdMIS\';\n    var action=(e.parameter&&e.parameter.action)?e.parameter.action:\'save\';\n    var callback=(e.parameter&&e.parameter.callback)||null;\n    var ds=ss.getSheetByName(\'_data\');\n    if(!ds){ds=ss.insertSheet(\'_data\');ds.hideSheet();ds.getRange(\'A1\').setValue(\'[]\');}\n    var result;\n    if(action===\'ping\'){\n      result={status:\'ok\',sheet:sheetName};\n    } else if(action===\'load\'){\n      var raw=ds.getRange(\'A1\').getValue();\n      result={status:\'ok\',plans:raw?JSON.parse(raw):[]};\n    } else if(action===\'save\'){\n      var dataStr=\'\';\n      if(e.postData&&e.postData.contents)dataStr=e.postData.contents;\n      else if(e.parameter&&e.parameter.data)dataStr=e.parameter.data;\n      if(!dataStr){result={status:\'error\',msg:\'no data\'};}\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange(\'A1\').setValue(JSON.stringify(plans));\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow([\'Date\',\'Shift\',\'Sl\',\'Part Name\',\'Part Code\',\'Operation\',\'Machine\',\'Planned\',\'Produced\',\'Rejected\',\'Eff%\',\'Remarks\',\'Saved At\']);\n        vs.getRange(1,1,1,13).setFontWeight(\'bold\').setBackground(\'#2c3e50\').setFontColor(\'#ffffff\');\n        var rows=[];\n        plans.forEach(function(p){p.rows.forEach(function(r){rows.push([p.date,p.shift,r.sl||\'\',(r.part_name||\'\'),(r.part_code||\'\'),(r.operation||\'\'),(r.machine||\'\'),(r.planned||0),(r.produced||0),(r.rejected||0),(r.planned>0?Math.round(r.produced/r.planned*100)+\'%\':\'—\'),(r.remarks||\'\'),(p.savedAt||\'\')])});});\n        if(rows.length)vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:\'ok\',plans:plans.length,rows:rows.length};\n      }\n    } else {result={status:\'error\',msg:\'unknown action\'};}\n    var out=ContentService.createTextOutput(callback?callback+\'(\'+JSON.stringify(result)+\')\':(JSON.stringify(result)));\n    out.setMimeType(callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return out;\n  }catch(err){\n    var er={status:\'error\',msg:err.toString()};\n    var cb2=(e.parameter&&e.parameter.callback)||null;\n    var o2=ContentService.createTextOutput(cb2?cb2+\'(\'+JSON.stringify(er)+\')\':(JSON.stringify(er)));\n    o2.setMimeType(cb2?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return o2;\n  } finally{lock.releaseLock();}\n}';
+
+function copyAppsScript(){
+  navigator.clipboard.writeText(APPS_SCRIPT_CODE)
+    .then(function(){toast('Code copied ✓');})
+    .catch(function(){
+      var ta=document.createElement('textarea');ta.value=APPS_SCRIPT_CODE;
+      document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+      toast('Code copied');
+    });
+}
+
+
+init();
+</script>
