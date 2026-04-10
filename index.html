@@ -409,7 +409,7 @@ let editingPlanId=null; // null=new plan, id=editing existing
 var GS_URL='https://script.google.com/macros/s/AKfycbw2udFQvCuFKD3w3F-3_8XfB5hBJe-g9YtwRddNqIMe01AyLgUeTT191nqNOMKKixfMog/exec';
 var GS_SHEET='ProdMIS';
 
-// JSONP — the only method that works from ANY origin (GitHub Pages, local, phone)
+// JSONP for READS — works cross-origin from any host
 function gsJsonp(params){
   return new Promise(function(resolve,reject){
     var cb='_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
@@ -426,6 +426,17 @@ function gsJsonp(params){
   });
 }
 
+// POST no-cors for WRITES — no URL length limit, Apps Script receives it fine
+// We can't read the response (no-cors), but we verify success with a load after
+async function gsPostSave(dataStr){
+  await fetch(GS_URL+'?action=save&sheet='+encodeURIComponent(GS_SHEET), {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body: dataStr
+  });
+}
+
 async function gsLoad(){
   const r=await gsJsonp('&action=load');
   if(r.status!=='ok') throw new Error(r.msg||'Load failed');
@@ -433,7 +444,7 @@ async function gsLoad(){
 }
 
 async function gsSave(){
-  // Merge-first: never overwrite another device's data
+  // Step 1: merge remote plans so we never lose other devices' data
   try{
     const remote=await gsLoad();
     const localIds=new Set(plans.map(p=>p.id));
@@ -443,8 +454,13 @@ async function gsSave(){
       try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
     }
   }catch(e){}
-  const r=await gsJsonp('&action=save&data='+encodeURIComponent(JSON.stringify(plans)));
-  if(r.status!=='ok') throw new Error(r.msg||'Save failed');
+  // Step 2: POST the full data — no URL length limit
+  const dataStr=JSON.stringify(plans);
+  await gsPostSave(dataStr);
+  // Step 3: wait 2s then verify it saved
+  await new Promise(r=>setTimeout(r,2000));
+  const verify=await gsLoad();
+  if(verify.length===0&&plans.length>0) throw new Error('Save did not reach Sheets — try again');
 }
 
 async function loadLocal(){
@@ -1180,7 +1196,7 @@ function toast(msg,type){
   setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},2800);
 }
 
-const APPS_SCRIPT_CODE="function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\nfunction handleRequest(e){\n  var lock=LockService.getScriptLock();lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var p=e.parameter||{};\n    var sheetName=p.sheet||'ProdMIS';\n    var action=p.action||'load';\n    var callback=p.callback||null;\n    var dataStr=p.data||'';\n    if(!dataStr&&e.postData&&e.postData.contents){\n      try{var b=JSON.parse(e.postData.contents);dataStr=b.data||e.postData.contents;}\n      catch(x){dataStr=e.postData.contents;}\n    }\n    var ds=ss.getSheetByName('_data');\n    if(!ds){ds=ss.insertSheet('_data');ds.hideSheet();ds.getRange('A1').setValue('[]');}\n    var result;\n    if(action==='ping'){result={status:'ok',sheet:sheetName};}\n    else if(action==='load'){var raw=ds.getRange('A1').getValue();result={status:'ok',plans:raw?JSON.parse(raw):[]};}\n    else if(action==='save'){\n      if(!dataStr){result={status:'error',msg:'no data'};}\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange('A1').setValue(JSON.stringify(plans));\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow(['Date','Shift','Sl','Part Name','Part Code','Operation','Machine','Planned','Produced','Rejected','Eff%','Remarks','Saved At']);\n        vs.getRange(1,1,1,13).setFontWeight('bold').setBackground('#2c3e50').setFontColor('#ffffff');\n        var rows=[];\n        plans.forEach(function(p){p.rows.forEach(function(r){rows.push([p.date,p.shift,r.sl||'',r.part_name||'',r.part_code||'',r.operation||'',r.machine||'',r.planned||0,r.produced||0,r.rejected||0,r.planned>0?Math.round(r.produced/r.planned*100)+'%':'\u2014',r.remarks||'',p.savedAt||'']);});});\n        if(rows.length)vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:'ok',plans:plans.length,rows:rows.length};\n      }\n    }else{result={status:'error',msg:'unknown action'};}\n    var out=ContentService.createTextOutput(callback?callback+'('+JSON.stringify(result)+')':JSON.stringify(result));\n    out.setMimeType(callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return out;\n  }catch(err){\n    var er={status:'error',msg:err.toString()};\n    var cb2=(e.parameter&&e.parameter.callback)||null;\n    var o2=ContentService.createTextOutput(cb2?cb2+'('+JSON.stringify(er)+')':JSON.stringify(er));\n    o2.setMimeType(cb2?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return o2;\n  }finally{lock.releaseLock();}\n}";
+const APPS_SCRIPT_CODE="function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\nfunction handleRequest(e){\n  var lock=LockService.getScriptLock();lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var p=e.parameter||{};\n    var sheetName=p.sheet||'ProdMIS';\n    var action=p.action||'load';\n    var callback=p.callback||null;\n    var dataStr=p.data||'';\n    // Read POST body \u2014 sent as plain text JSON string\n    if(!dataStr&&e.postData&&e.postData.contents){\n      dataStr=e.postData.contents;\n    }\n    var ds=ss.getSheetByName('_data');\n    if(!ds){ds=ss.insertSheet('_data');ds.hideSheet();ds.getRange('A1').setValue('[]');}\n    var result;\n    if(action==='ping'){result={status:'ok',sheet:sheetName};}\n    else if(action==='load'){var raw=ds.getRange('A1').getValue();result={status:'ok',plans:raw?JSON.parse(raw):[]};}\n    else if(action==='save'){\n      if(!dataStr){result={status:'error',msg:'no data'};}\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange('A1').setValue(JSON.stringify(plans));\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow(['Date','Shift','Sl','Part Name','Part Code','Operation','Machine','Planned','Produced','Rejected','Eff%','Remarks','Saved At']);\n        vs.getRange(1,1,1,13).setFontWeight('bold').setBackground('#2c3e50').setFontColor('#ffffff');\n        var rows=[];\n        plans.forEach(function(plan){plan.rows.forEach(function(r){rows.push([plan.date,plan.shift,r.sl||'',r.part_name||'',r.part_code||'',r.operation||'',r.machine||'',r.planned||0,r.produced||0,r.rejected||0,r.planned>0?Math.round(r.produced/r.planned*100)+'%':'--',r.remarks||'',plan.savedAt||'']);});});\n        if(rows.length)vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:'ok',plans:plans.length,rows:rows.length};\n      }\n    }else{result={status:'error',msg:'unknown action'};}\n    var out=ContentService.createTextOutput(callback?callback+'('+JSON.stringify(result)+')':JSON.stringify(result));\n    out.setMimeType(callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return out;\n  }catch(err){\n    var er={status:'error',msg:err.toString()};\n    var cb2=(e.parameter&&e.parameter.callback)||null;\n    var o2=ContentService.createTextOutput(cb2?cb2+'('+JSON.stringify(er)+')':JSON.stringify(er));\n    o2.setMimeType(cb2?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return o2;\n  }finally{lock.releaseLock();}\n}";
 
 init();
 </script>
