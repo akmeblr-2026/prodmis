@@ -406,7 +406,7 @@ let editingPlanId=null; // null=new plan, id=editing existing
 // ════════════════════════════════════════════════════════════
 // GOOGLE SHEETS — PERMANENT DATABASE
 // ════════════════════════════════════════════════════════════
-var GS_URL='',GS_SHEET='ProdMIS';
+var GS_URL='https://script.google.com/macros/s/AKfycbw2udFQvCuFKD3w3F-3_8XfB5hBJe-g9YtwRddNqIMe01AyLgUeTT191nqNOMKKixfMog/exec',GS_SHEET='ProdMIS';
 
 // Simple fetch-based API — works from GitHub Pages (https)
 async function gsApi(action, data){
@@ -457,10 +457,10 @@ async function init(){
   try{
     var u=await window.storage.get('prodmis_gs_url');
     var s=await window.storage.get('prodmis_gs_sheet');
+    // If user saved a custom URL, use it; otherwise keep the hardcoded default
     if(u&&u.value) GS_URL=u.value;
-    else if(DEFAULT_GS_URL) GS_URL=DEFAULT_GS_URL; // use hardcoded default
     if(s&&s.value) GS_SHEET=s.value;
-  }catch(e){ if(DEFAULT_GS_URL) GS_URL=DEFAULT_GS_URL; }
+  }catch(e){}
   if(GS_URL){
     showLoader('Loading from Google Sheets…');
     try{
@@ -1077,13 +1077,14 @@ async function initSettings(){
   try{
     const u=await window.storage.get('prodmis_gs_url');
     const s=await window.storage.get('prodmis_gs_sheet');
-    const effectiveUrl=(u&&u.value)?u.value:(typeof DEFAULT_GS_URL!=='undefined'?DEFAULT_GS_URL:'');
+    // Always use stored URL if available, otherwise use the hardcoded default
+    const storedUrl=(u&&u.value)?u.value:'';
+    const effectiveUrl=storedUrl||GS_URL;
     if(effectiveUrl){document.getElementById('gs-url').value=effectiveUrl;GS_URL=effectiveUrl;}
     if(s&&s.value){document.getElementById('gs-sheet').value=s.value;GS_SHEET=s.value;}
   }catch(e){
-    if(typeof DEFAULT_GS_URL!=='undefined'&&DEFAULT_GS_URL){
-      document.getElementById('gs-url').value=DEFAULT_GS_URL;GS_URL=DEFAULT_GS_URL;
-    }
+    // Even on error, show the hardcoded URL
+    if(GS_URL) document.getElementById('gs-url').value=GS_URL;
   }
   updateGsBadge();
   const pre=document.getElementById('apps-script-code');
