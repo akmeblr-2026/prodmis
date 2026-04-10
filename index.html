@@ -314,6 +314,7 @@ table.dt{width:100%;border-collapse:collapse;font-size:12px}
       <div class="card-hd"><div class="card-title">🔗 Google Sheets — Permanent Storage</div></div>
       <div style="font-size:12px;color:#555;line-height:1.8;background:#f0f9ff;padding:10px 12px;border-radius:6px;margin-bottom:14px;border-left:3px solid var(--blue)">
         Your Google Sheet is the database. Every save/edit/delete writes directly to it. On startup the app loads from Sheets automatically.
+        <br><b>Tip:</b> Paste your URL below and click Save Settings — it will be remembered on this device. Or hardcode it in the HTML file so all devices connect automatically.
       </div>
       <div class="fgrid">
         <div class="fg" style="grid-column:1/-1">
@@ -405,6 +406,12 @@ let editingPlanId=null; // null=new plan, id=editing existing
 // ════════════════════════════════════════════════════════════
 // GOOGLE SHEETS — PERMANENT DATABASE
 // ════════════════════════════════════════════════════════════
+// ══ SET YOUR APPS SCRIPT URL HERE ══════════════════════════
+// Paste your Web App URL below (between the quotes).
+// Upload to GitHub once — all devices connect automatically.
+// Get it from: Google Sheet → Extensions → Apps Script → Deploy
+const DEFAULT_GS_URL = 'https://script.google.com/macros/s/AKfycbw2udFQvCuFKD3w3F-3_8XfB5hBJe-g9YtwRddNqIMe01AyLgUeTT191nqNOMKKix/exec'; // Your Apps Script URL — all devices use this automatically
+
 var GS_URL='',GS_SHEET='ProdMIS';
 
 function gsJsonp(params){
@@ -476,7 +483,13 @@ function hideLoader(){document.getElementById('gs-loader').style.display='none';
 // ════════════════════════════════════════════════════════════
 async function init(){
   document.getElementById('entry-date').value=new Date().toISOString().slice(0,10);
-  try{var u=await window.storage.get('prodmis_gs_url');var s=await window.storage.get('prodmis_gs_sheet');if(u&&u.value)GS_URL=u.value;if(s&&s.value)GS_SHEET=s.value;}catch(e){}
+  try{
+    var u=await window.storage.get('prodmis_gs_url');
+    var s=await window.storage.get('prodmis_gs_sheet');
+    if(u&&u.value) GS_URL=u.value;
+    else if(DEFAULT_GS_URL) GS_URL=DEFAULT_GS_URL; // use hardcoded default
+    if(s&&s.value) GS_SHEET=s.value;
+  }catch(e){ if(DEFAULT_GS_URL) GS_URL=DEFAULT_GS_URL; }
   if(GS_URL){
     showLoader('Loading from Google Sheets…');
     try{
@@ -1093,9 +1106,14 @@ async function initSettings(){
   try{
     const u=await window.storage.get('prodmis_gs_url');
     const s=await window.storage.get('prodmis_gs_sheet');
-    if(u&&u.value){document.getElementById('gs-url').value=u.value;GS_URL=u.value;}
+    const effectiveUrl=(u&&u.value)?u.value:(typeof DEFAULT_GS_URL!=='undefined'?DEFAULT_GS_URL:'');
+    if(effectiveUrl){document.getElementById('gs-url').value=effectiveUrl;GS_URL=effectiveUrl;}
     if(s&&s.value){document.getElementById('gs-sheet').value=s.value;GS_SHEET=s.value;}
-  }catch(e){}
+  }catch(e){
+    if(typeof DEFAULT_GS_URL!=='undefined'&&DEFAULT_GS_URL){
+      document.getElementById('gs-url').value=DEFAULT_GS_URL;GS_URL=DEFAULT_GS_URL;
+    }
+  }
   updateGsBadge();
   const pre=document.getElementById('apps-script-code');
   if(pre) pre.textContent=APPS_SCRIPT_CODE;
