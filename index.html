@@ -407,39 +407,54 @@ let editingPlanId=null; // null=new plan, id=editing existing
 // ════════════════════════════════════════════════════════════
 let GS_URL='',GS_SHEET='ProdMIS';
 
-function gsJsonp(action){
-  return new Promise(function(resolve,reject){
-    var cb='_cb_'+Date.now();
-    var url=GS_URL+'?action='+encodeURIComponent(action)+'&sheet='+encodeURIComponent(GS_SHEET)+'&callback='+cb;
-    var el=document.createElement('script');
-    var timer=setTimeout(function(){cleanup();reject(new Error('Timeout — deploy a New Version and check access is set to Anyone'));},15000);
-    window[cb]=function(data){cleanup();resolve(data);};
-    function cleanup(){clearTimeout(timer);delete window[cb];if(el.parentNode)el.parentNode.removeChild(el);}
-    el.onerror=function(){cleanup();reject(new Error('Network error — check URL'));};
-    el.src=url;document.head.appendChild(el);
-  });
+// ── Google Sheets API ──────────────────────────────────────────
+// From GitHub Pages (https) fetch works fine — no CORS tricks needed.
+// Apps Script must be deployed with "Who has access: Anyone".
+// For LOAD: GET request with JSONP callback (most reliable cross-origin read)
+// For SAVE: fetch POST with no-cors (write-only, no response needed)
+//           + GET fallback with data in URL param for confirmation
+
+async function gsCall(action, payload){
+  if(!GS_URL) throw new Error('No Apps Script URL. Go to Settings.');
+  if(action==='save'){
+    // Strategy: try fetch POST first, fall back to GET with data param
+    const dataStr = JSON.stringify(payload);
+    // Option 1: fetch with no-cors (fire and forget — always "succeeds" from browser POV)
+    try{
+      fetch(GS_URL, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({action:'save', sheet:GS_SHEET, data:dataStr})
+      });
+      // Also send via GET in case POST body isn't read (Apps Script quirk)
+      const getUrl = GS_URL+'?action=save&sheet='+encodeURIComponent(GS_SHEET)+'&data='+encodeURIComponent(dataStr);
+      await fetch(getUrl, {mode:'no-cors'});
+      return {status:'ok'};
+    }catch(e){throw new Error('Save failed: '+e.message);}
+  } else {
+    // For load/ping: use JSONP so we can read the response cross-origin
+    return new Promise(function(resolve,reject){
+      var cb='_cb_'+Date.now();
+      var url=GS_URL+'?action='+encodeURIComponent(action)+'&sheet='+encodeURIComponent(GS_SHEET)+'&callback='+cb;
+      var el=document.createElement('script');
+      var timer=setTimeout(function(){cleanup();reject(new Error('Timeout — did you deploy a New Version? Is access set to Anyone?'));},15000);
+      window[cb]=function(data){cleanup();resolve(data);};
+      function cleanup(){clearTimeout(timer);delete window[cb];if(el.parentNode)el.parentNode.removeChild(el);}
+      el.onerror=function(){cleanup();reject(new Error('Could not reach Apps Script — check URL'));};
+      el.src=url; document.head.appendChild(el);
+    });
+  }
 }
 
-function gsPost(data){
-  return new Promise(function(resolve,reject){
-    var fn='_fr_'+Date.now();
-    var iframe=document.createElement('iframe');
-    iframe.name=fn;iframe.style.display='none';document.body.appendChild(iframe);
-    var form=document.createElement('form');
-    form.method='POST';form.action=GS_URL;form.target=fn;form.style.display='none';
-    var fi=function(n,v){var i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;form.appendChild(i);};
-    fi('action','save');fi('sheet',GS_SHEET);fi('data',JSON.stringify(data));
-    document.body.appendChild(form);
-    var done=false;
-    var timer=setTimeout(function(){if(!done){done=true;cleanup();resolve({status:'ok'});}},8000);
-    function cleanup(){clearTimeout(timer);if(form.parentNode)form.parentNode.removeChild(form);setTimeout(function(){if(iframe.parentNode)iframe.parentNode.removeChild(iframe);},1000);}
-    iframe.onload=function(){if(!done){done=true;cleanup();resolve({status:'ok'});}};
-    form.submit();
-  });
+async function gsLoad(){
+  const r=await gsCall('load');
+  if(r.status!=='ok') throw new Error(r.msg||'Load failed');
+  return r.plans||[];
 }
 
-async function gsLoad(){var r=await gsJsonp('load');if(r.status!=='ok')throw new Error(r.msg||'Load failed');return r.plans||[];}
-async function gsSave(){await gsPost(plans);}
+async function gsSave(){
+  await gsCall('save', plans);
+}
 async function loadLocal(){
   try{var r=await window.storage.get('prodmis_v2');if(!r)r=await window.storage.get('prodmis_v1');if(r)plans=JSON.parse(r.value);}catch(e){plans=[];}
   // Also load custom master data
@@ -451,7 +466,10 @@ async function persistLocal(){
 }
 async function persist(){
   await persistLocal();
-  if(GS_URL)gsSave().catch(function(){});
+  if(GS_URL){
+    try{ await gsSave(); }
+    catch(e){ toast('Sheets sync failed: '+e.message,'w'); }
+  }
 }
 function showLoader(m){document.getElementById('gs-loader-msg').textContent=m||'Loading…';document.getElementById('gs-loader').style.display='flex';}
 function hideLoader(){document.getElementById('gs-loader').style.display='none';}
@@ -1073,8 +1091,7 @@ async function initSettings(){
     if(s&&s.value)document.getElementById('gs-sheet').value=s.value;
   }catch(e){}
   updateGsBadge();
-  document.getElementById('apps-script-code').textContent="function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\nfunction handleRequest(e){\n  var lock=LockService.getScriptLock();lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var sheetName=(e.parameter&&e.parameter.sheet)?e.parameter.sheet:'ProdMIS';\n    var action=(e.parameter&&e.parameter.action)?e.parameter.action:'save';\n    var callback=(e.parameter&&e.parameter.callback)||null;\n    var ds=ss.getSheetByName('_data');\n    if(!ds){ds=ss.insertSheet('_data');ds.hideSheet();ds.getRange('A1').setValue('[]');}\n    var result;\n    if(action==='ping'){result={status:'ok',sheet:sheetName};}\n    else if(action==='load'){var raw=ds.getRange('A1').getValue();result={status:'ok',plans:raw?JSON.parse(raw):[]};}\n    else if(action==='save'){\n      var dataStr='';\n      if(e.postData&&e.postData.contents)dataStr=e.postData.contents;\n      else if(e.parameter&&e.parameter.data)dataStr=e.parameter.data;\n      if(!dataStr){result={status:'error',msg:'no data'};}\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange('A1').setValue(JSON.stringify(plans));\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow(['Date','Shift','Sl','Part Name','Part Code','Operation','Machine','Planned','Produced','Rejected','Eff%','Remarks','Saved At']);\n        vs.getRange(1,1,1,13).setFontWeight('bold').setBackground('#2c3e50').setFontColor('#ffffff');\n        var rows=[];\n        plans.forEach(function(p){p.rows.forEach(function(r){rows.push([p.date,p.shift,r.sl||'',r.part_name||'',r.part_code||'',r.operation||'',r.machine||'',r.planned||0,r.produced||0,r.rejected||0,r.planned>0?Math.round(r.produced/r.planned*100)+'%':'\u2014',r.remarks||'',p.savedAt||'']);});});\n        if(rows.length)vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:'ok',plans:plans.length,rows:rows.length};\n      }\n    }else{result={status:'error',msg:'unknown action'};}\n    var out=ContentService.createTextOutput(callback?callback+'('+JSON.stringify(result)+')':JSON.stringify(result));\n    out.setMimeType(callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return out;\n  }catch(err){\n    var er={status:'error',msg:err.toString()};\n    var cb2=(e.parameter&&e.parameter.callback)||null;\n    var o2=ContentService.createTextOutput(cb2?cb2+'('+JSON.stringify(er)+')':JSON.stringify(er));\n    o2.setMimeType(cb2?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON);\n    return o2;\n  }finally{lock.releaseLock();}\n}";
-}
+  document.getElementById('apps-script-code').textContent="function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\nfunction handleRequest(e){\n  var lock=LockService.getScriptLock();\n  lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var sheetName='ProdMIS';\n    var action='save';\n    var callback=null;\n    var dataStr='';\n\n    // Read params from GET querystring\n    if(e.parameter){\n      if(e.parameter.sheet) sheetName=e.parameter.sheet;\n      if(e.parameter.action) action=e.parameter.action;\n      if(e.parameter.callback) callback=e.parameter.callback;\n      if(e.parameter.data) dataStr=e.parameter.data;\n    }\n\n    // Read data from POST body (fetch with JSON body)\n    if(e.postData && e.postData.contents){\n      try{\n        var body=JSON.parse(e.postData.contents);\n        if(body.action) action=body.action;\n        if(body.sheet) sheetName=body.sheet;\n        if(body.data) dataStr=body.data;\n      }catch(ex){\n        // plain text body = just the data\n        if(!dataStr) dataStr=e.postData.contents;\n      }\n    }\n\n    // Hidden _data sheet stores JSON blob\n    var ds=ss.getSheetByName('_data');\n    if(!ds){ds=ss.insertSheet('_data');ds.hideSheet();ds.getRange('A1').setValue('[]');}\n\n    var result;\n\n    if(action==='ping'){\n      result={status:'ok',sheet:sheetName};\n\n    }else if(action==='load'){\n      var raw=ds.getRange('A1').getValue();\n      result={status:'ok',plans:raw?JSON.parse(raw):[]};\n\n    }else if(action==='save'){\n      if(!dataStr){ result={status:'error',msg:'No data received'}; }\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange('A1').setValue(JSON.stringify(plans));\n        // Write human-readable rows to visible sheet\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow(['Date','Shift','Sl','Part Name','Part Code','Operation','Machine','Planned','Produced','Rejected','Eff%','Remarks','Saved At']);\n        vs.getRange(1,1,1,13).setFontWeight('bold').setBackground('#2c3e50').setFontColor('#ffffff');\n        var rows=[];\n        plans.forEach(function(p){\n          p.rows.forEach(function(r){\n            rows.push([p.date,p.shift,r.sl||'',r.part_name||'',r.part_code||'',r.operation||'',r.machine||'',r.planned||0,r.produced||0,r.rejected||0,r.planned>0?Math.round(r.produced/r.planned*100)+'%':'\u2014',r.remarks||'',p.savedAt||'']);\n          });\n        });\n        if(rows.length) vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:'ok',plans:plans.length,rows:rows.length};\n      }\n    }else{\n      result={status:'error',msg:'Unknown action: '+action};\n    }\n\n    var outStr=callback?callback+'('+JSON.stringify(result)+')':JSON.stringify(result);\n    var mime=callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON;\n    return ContentService.createTextOutput(outStr).setMimeType(mime);\n\n  }catch(err){\n    var er={status:'error',msg:err.toString()};\n    var outStr2=callback?callback+'('+JSON.stringify(er)+')':JSON.stringify(er);\n    var mime2=callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON;\n    return ContentService.createTextOutput(outStr2).setMimeType(mime2);\n  }finally{\n    lock.releaseLock();\n  }\n}";}
 
 async function saveSettings(){
   GS_URL=document.getElementById('gs-url').value.trim();
@@ -1097,7 +1114,7 @@ async function testConnection(){
   if(!GS_URL){el.textContent='❌ No URL — paste your Web App URL and Save Settings';el.style.color='var(--red)';return;}
   el.textContent='⏳ Testing…';el.style.color='var(--orange)';
   try{
-    const r=await gsJsonp('ping');
+    const r=await gsCall('ping');
     if(r.status==='ok'){el.textContent='✅ Connected — Sheet: '+r.sheet+' — Ready!';el.style.color='var(--green)';updateGsBadge();toast('Connected ✓');}
     else{el.textContent='❌ Script error: '+(r.msg||'unknown');el.style.color='var(--red)';}
   }catch(e){
