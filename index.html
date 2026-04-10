@@ -406,77 +406,48 @@ let editingPlanId=null; // null=new plan, id=editing existing
 // ════════════════════════════════════════════════════════════
 // GOOGLE SHEETS — PERMANENT DATABASE
 // ════════════════════════════════════════════════════════════
-// ══ SET YOUR APPS SCRIPT URL HERE ══════════════════════════
-// Paste your Web App URL below (between the quotes).
-// Upload to GitHub once — all devices connect automatically.
-// Get it from: Google Sheet → Extensions → Apps Script → Deploy
-const DEFAULT_GS_URL = 'https://script.google.com/macros/s/AKfycbw2udFQvCuFKD3w3F-3_8XfB5hBJe-g9YtwRddNqIMe01AyLgUeTT191nqNOMKKixfMog/exec'; // Your Apps Script URL — all devices use this automatically
-
 var GS_URL='',GS_SHEET='ProdMIS';
 
-function gsJsonp(params){
-  return new Promise(function(resolve,reject){
-    var cb='_cb_'+Date.now()+'_'+Math.floor(Math.random()*9999);
-    var url=GS_URL+'?callback='+cb+'&sheet='+encodeURIComponent(GS_SHEET)+params;
-    var el=document.createElement('script');
-    var timer=setTimeout(function(){
-      cleanup();reject(new Error('Timeout — deploy a NEW VERSION and set access = Anyone'));
-    },20000);
-    window[cb]=function(data){cleanup();resolve(data);};
-    function cleanup(){clearTimeout(timer);delete window[cb];if(el.parentNode)el.parentNode.removeChild(el);}
-    el.onerror=function(){cleanup();reject(new Error('Cannot reach Apps Script — check URL'));};
-    el.src=url; document.head.appendChild(el);
-  });
+// Simple fetch-based API — works from GitHub Pages (https)
+async function gsApi(action, data){
+  if(!GS_URL) throw new Error('No Apps Script URL configured');
+  var url = GS_URL + '?action=' + action + '&sheet=' + encodeURIComponent(GS_SHEET);
+  var opts = {method:'GET'};
+  if(data){
+    // Send data as POST body — Apps Script reads e.postData.contents
+    url = GS_URL + '?action=' + action + '&sheet=' + encodeURIComponent(GS_SHEET);
+    opts = {
+      method:'POST',
+      body: JSON.stringify(data),
+      headers:{'Content-Type':'text/plain'} // text/plain avoids CORS preflight
+    };
+  }
+  const resp = await fetch(url, opts);
+  const text = await resp.text();
+  try{ return JSON.parse(text); }
+  catch(e){ throw new Error('Bad response: ' + text.slice(0,100)); }
 }
 
 async function gsLoad(){
-  const r=await gsJsonp('&action=load');
-  if(r.status!=='ok') throw new Error(r.msg||'Load failed');
-  return r.plans||[];
+  const r = await gsApi('load');
+  if(r.status !== 'ok') throw new Error(r.msg || 'Load failed');
+  return r.plans || [];
 }
 
 async function gsSave(){
-  // MERGE-FIRST: load latest from Sheets, merge with local, then save
-  // This prevents one device from overwriting another device's data
+  // Merge-first: load remote, merge local changes, save combined
   try{
     const remote = await gsLoad();
-    // Merge: remote plans that aren't in local get added back
     const localIds = new Set(plans.map(p=>p.id));
     const remoteOnly = remote.filter(p=>!localIds.has(p.id));
-    if(remoteOnly.length > 0){
-      plans = [...plans, ...remoteOnly];
-      plans.sort((a,b)=>new Date(a.date)-new Date(b.date)||a.id-b.id);
-      // Update local cache too
+    if(remoteOnly.length){
+      plans = [...plans,...remoteOnly].sort((a,b)=>new Date(a.date)-new Date(b.date)||a.id-b.id);
       try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
     }
-  }catch(e){
-    // If load fails (first save ever, etc.) just continue with local data
-  }
-  const r=await gsJsonp('&action=save&data='+encodeURIComponent(JSON.stringify(plans)));
-  if(r.status!=='ok') throw new Error(r.msg||'Save failed');
+  }catch(e){}
+  const r = await gsApi('save', {data: JSON.stringify(plans)});
+  if(r.status !== 'ok') throw new Error(r.msg || 'Save failed');
 }
-
-async function loadLocal(){
-  try{var r=await window.storage.get('prodmis_v2');if(!r)r=await window.storage.get('prodmis_v1');if(r)plans=JSON.parse(r.value);}catch(e){plans=[];}
-  try{var m=await window.storage.get('prodmis_master');if(m){var md=JSON.parse(m.value);customParts=md.parts||[];customMachines=md.machines||[];}}catch(e){}
-}
-async function persistLocal(){
-  try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
-  try{await window.storage.set('prodmis_master',JSON.stringify({parts:customParts,machines:customMachines}));}catch(e){}
-}
-async function persist(){
-  await persistLocal();
-  if(GS_URL){
-    try{
-      await gsSave();
-      // After merge-save, rebuild UI so merged plans appear
-      buildDash();
-    }
-    catch(e){toast('Sheets sync error: '+e.message,'w');}
-  }
-}
-function showLoader(m){document.getElementById('gs-loader-msg').textContent=m||'Loading…';document.getElementById('gs-loader').style.display='flex';}
-function hideLoader(){document.getElementById('gs-loader').style.display='none';}
 
 // ════════════════════════════════════════════════════════════
 // INIT
@@ -1140,7 +1111,7 @@ async function testConnection(){
   if(!GS_URL){el.textContent='❌ No URL — paste your Web App URL and Save Settings';el.style.color='var(--red)';return;}
   el.textContent='⏳ Testing…';el.style.color='var(--orange)';
   try{
-    const r=await gsJsonp('&action=ping');
+    const r=await gsApi('ping');
     if(r.status==='ok'){el.textContent='✅ Connected — Sheet: '+r.sheet+' — Ready!';el.style.color='var(--green)';updateGsBadge();toast('Connected ✓');}
     else{el.textContent='❌ Script error: '+(r.msg||'unknown');el.style.color='var(--red)';}
   }catch(e){
@@ -1203,7 +1174,7 @@ function toast(msg,type){
   setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},2800);
 }
 
-const APPS_SCRIPT_CODE="function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\n\nfunction handleRequest(e){\n  var lock=LockService.getScriptLock();\n  lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var p=e.parameter||{};\n    var sheetName=p.sheet||'ProdMIS';\n    var action=p.action||'save';\n    var callback=p.callback||null;\n    var dataStr=p.data||'';\n    if(!dataStr&&e.postData&&e.postData.contents){\n      try{var b=JSON.parse(e.postData.contents);if(b.data)dataStr=b.data;}catch(x){dataStr=e.postData.contents;}\n    }\n    var ds=ss.getSheetByName('_data');\n    if(!ds){ds=ss.insertSheet('_data');ds.hideSheet();ds.getRange('A1').setValue('[]');}\n    var result;\n    if(action==='ping'){\n      result={status:'ok',sheet:sheetName};\n    }else if(action==='load'){\n      var raw=ds.getRange('A1').getValue();\n      result={status:'ok',plans:raw?JSON.parse(raw):[]};\n    }else if(action==='save'){\n      if(!dataStr){result={status:'error',msg:'No data received'};}\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange('A1').setValue(JSON.stringify(plans));\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow(['Date','Shift','Sl','Part Name','Part Code','Operation','Machine','Planned','Produced','Rejected','Eff%','Remarks','Saved At']);\n        vs.getRange(1,1,1,13).setFontWeight('bold').setBackground('#2c3e50').setFontColor('#ffffff');\n        var rows=[];\n        plans.forEach(function(plan){\n          plan.rows.forEach(function(r){\n            var eff=r.planned>0?Math.round(r.produced/r.planned*100)+'%':'--';\n            rows.push([plan.date,plan.shift,r.sl||'',r.part_name||'',r.part_code||'',\n                       r.operation||'',r.machine||'',r.planned||0,r.produced||0,\n                       r.rejected||0,eff,r.remarks||'',plan.savedAt||'']);\n          });\n        });\n        if(rows.length)vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:'ok',plans:plans.length,rows:rows.length};\n      }\n    }else{\n      result={status:'error',msg:'Unknown action'};\n    }\n    var body=callback?callback+'('+JSON.stringify(result)+')':JSON.stringify(result);\n    var mime=callback?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON;\n    return ContentService.createTextOutput(body).setMimeType(mime);\n  }catch(err){\n    var er={status:'error',msg:err.toString()};\n    var cb=e.parameter&&e.parameter.callback?e.parameter.callback:null;\n    var out=cb?cb+'('+JSON.stringify(er)+')':JSON.stringify(er);\n    var m2=cb?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON;\n    return ContentService.createTextOutput(out).setMimeType(m2);\n  }finally{lock.releaseLock();}\n}";
+const APPS_SCRIPT_CODE="function doGet(e){return handleRequest(e);}\nfunction doPost(e){return handleRequest(e);}\nfunction handleRequest(e){\n  // Add CORS headers\n  var output;\n  var lock=LockService.getScriptLock();\n  lock.waitLock(30000);\n  try{\n    var ss=SpreadsheetApp.getActiveSpreadsheet();\n    var p=e.parameter||{};\n    var sheetName=p.sheet||'ProdMIS';\n    var action=p.action||'load';\n    var dataStr='';\n\n    // Read data from POST body\n    if(e.postData&&e.postData.contents){\n      try{\n        var body=JSON.parse(e.postData.contents);\n        if(body.data) dataStr=body.data;\n        else dataStr=e.postData.contents;\n      }catch(x){ dataStr=e.postData.contents; }\n    }\n    // Also accept data from GET param\n    if(!dataStr&&p.data) dataStr=p.data;\n\n    var ds=ss.getSheetByName('_data');\n    if(!ds){ds=ss.insertSheet('_data');ds.hideSheet();ds.getRange('A1').setValue('[]');}\n\n    var result;\n    if(action==='ping'){\n      result={status:'ok',sheet:sheetName};\n    }else if(action==='load'){\n      var raw=ds.getRange('A1').getValue();\n      result={status:'ok',plans:raw?JSON.parse(raw):[]};\n    }else if(action==='save'){\n      if(!dataStr){result={status:'error',msg:'No data received'};}\n      else{\n        var plans=JSON.parse(dataStr);\n        ds.getRange('A1').setValue(JSON.stringify(plans));\n        var vs=ss.getSheetByName(sheetName)||ss.insertSheet(sheetName);\n        vs.clearContents();\n        vs.appendRow(['Date','Shift','Sl','Part Name','Part Code','Operation','Machine','Planned','Produced','Rejected','Eff%','Remarks','Saved At']);\n        vs.getRange(1,1,1,13).setFontWeight('bold').setBackground('#2c3e50').setFontColor('#ffffff');\n        var rows=[];\n        plans.forEach(function(plan){\n          plan.rows.forEach(function(r){\n            var eff=r.planned>0?Math.round(r.produced/r.planned*100)+'%':'--';\n            rows.push([plan.date,plan.shift,r.sl||'',r.part_name||'',r.part_code||'',\n                       r.operation||'',r.machine||'',r.planned||0,r.produced||0,\n                       r.rejected||0,eff,r.remarks||'',plan.savedAt||'']);\n          });\n        });\n        if(rows.length)vs.getRange(2,1,rows.length,13).setValues(rows);\n        result={status:'ok',plans:plans.length,rows:rows.length};\n      }\n    }else{result={status:'error',msg:'Unknown action: '+action};}\n\n    output=ContentService.createTextOutput(JSON.stringify(result))\n      .setMimeType(ContentService.MimeType.JSON);\n  }catch(err){\n    output=ContentService.createTextOutput(JSON.stringify({status:'error',msg:err.toString()}))\n      .setMimeType(ContentService.MimeType.JSON);\n  }finally{lock.releaseLock();}\n  return output;\n}";
 
 
 init();
