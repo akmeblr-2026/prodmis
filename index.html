@@ -429,8 +429,24 @@ async function gsLoad(){
 }
 
 async function gsSave(){
+  // MERGE-FIRST: load latest from Sheets, merge with local, then save
+  // This prevents one device from overwriting another device's data
+  try{
+    const remote = await gsLoad();
+    // Merge: remote plans that aren't in local get added back
+    const localIds = new Set(plans.map(p=>p.id));
+    const remoteOnly = remote.filter(p=>!localIds.has(p.id));
+    if(remoteOnly.length > 0){
+      plans = [...plans, ...remoteOnly];
+      plans.sort((a,b)=>new Date(a.date)-new Date(b.date)||a.id-b.id);
+      // Update local cache too
+      try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
+    }
+  }catch(e){
+    // If load fails (first save ever, etc.) just continue with local data
+  }
   const r=await gsJsonp('&action=save&data='+encodeURIComponent(JSON.stringify(plans)));
-  if(r.status!=='ok') throw new Error(r.msg||'Save failed: '+r.msg);
+  if(r.status!=='ok') throw new Error(r.msg||'Save failed');
 }
 
 async function loadLocal(){
@@ -444,7 +460,11 @@ async function persistLocal(){
 async function persist(){
   await persistLocal();
   if(GS_URL){
-    try{await gsSave();}
+    try{
+      await gsSave();
+      // After merge-save, rebuild UI so merged plans appear
+      buildDash();
+    }
     catch(e){toast('Sheets sync error: '+e.message,'w');}
   }
 }
@@ -459,8 +479,17 @@ async function init(){
   try{var u=await window.storage.get('prodmis_gs_url');var s=await window.storage.get('prodmis_gs_sheet');if(u&&u.value)GS_URL=u.value;if(s&&s.value)GS_SHEET=s.value;}catch(e){}
   if(GS_URL){
     showLoader('Loading from Google Sheets…');
-    try{plans=await gsLoad();hideLoader();}
-    catch(e){hideLoader();toast('Sheets offline — using local cache','w');await loadLocal();}
+    try{
+      plans=await gsLoad();
+      // Cache locally for offline fallback
+      try{await window.storage.set('prodmis_v2',JSON.stringify(plans));}catch(e){}
+      hideLoader();
+    }
+    catch(e){
+      hideLoader();
+      toast('Sheets offline — using local cache','w');
+      await loadLocal();
+    }
   }else{await loadLocal();}
   updateGsBadge();
   addRows5();buildDash();
